@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import render
+from .models import Gestionnaire
 
 from .forms import EtudiantForm, GestionnaireForm, CooperativeForm, LivreForm, DescriptionLivreForm
 # Create your views here.
@@ -35,18 +36,28 @@ def etudiant(request):
 	
 def gestionnaire(request):
 	title = "Gestionnaire"
-	form = EtudiantForm(request.POST or None)
-	#form = EtudiantForm(request.POST or None, initial={'email': title})
+	form = GestionnaireForm(request.POST or None)
+	html = "gestionnaire.html"
+	
+	#sign up
+	if Gestionnaire.objects.count() is 0:
+		message = "Veuillez créer un compte gestionnaire"
+		if form.is_valid():
+			instance = form.save()
+			html = "gestionnairelogin.html"
+	#signin
+	else:
+		form = GestionnaireForm(request.POST or None)
+		html = "gestionnairelogin.html"
+		message = "Veuillez vous connecter"
+		if form
+	
 	context = {
 		"title": title,
-		"form": form
+		"form": form,
+		"message": message,
 	}
-	#add a form
 	
-	html = "gestionnaire.html"
-	if form.is_valid():
-		instance = form.save(commit=False)
-		instance.save()
 	
 	
 	return render(request, html, context)

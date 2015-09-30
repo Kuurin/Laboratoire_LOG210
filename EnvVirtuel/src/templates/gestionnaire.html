@@ -1,11 +1,24 @@
 {% extends 'base.html' %}
 
-{% block second_titre %}   {{title}}  {% endblock %}
+{% block second_titre %}  
+
+ {{title}}  
+
+ {% endblock %}
 
 
 
 
 {% block content %}
 		
+<form method='POST' action=''>{% csrf_token %}
+	{{message}}
+	{{form.as_p}}
+
+	<input class="btn" type='submit' value='Sign up'>
+	
+	</input>
+</form>
+
 
 {% endblock %}

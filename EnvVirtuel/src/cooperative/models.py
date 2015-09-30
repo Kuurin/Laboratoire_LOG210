@@ -17,6 +17,7 @@ class Gestionnaire(models.Model):
 	def __str__(self):
 		return self.email
 
+
 class Cooperative(models.Model):
 	nom = models.CharField(max_length=120, blank=False, null=True)
 	adresse = models.CharField(max_length=1000, blank=False, null=True)
