@@ -3,8 +3,13 @@ from django.core.mail import send_mail
 from django.shortcuts import render
 from .models import Gestionnaire
 
+#pour login
+from django.contrib.auth.decorators import login_required
+
 from .forms import EtudiantForm, GestionnaireForm, CooperativeForm, LivreForm, DescriptionLivreForm
 # Create your views here.
+
+
 def home(request):
 	title = "Coopérative"
 	context = {
@@ -14,7 +19,7 @@ def home(request):
 	
 	html = "home.html"
 	
-	return render(request, html, context)
+	return render(request, html, {'user':request.user}) 
 	
 def etudiant(request):
 	title = "Étudiant"

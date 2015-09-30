@@ -54,6 +54,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
+#login thing
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+
 ROOT_URLCONF = 'projet_log210.urls'
 
 TEMPLATES = [

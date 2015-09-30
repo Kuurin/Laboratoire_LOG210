@@ -9,4 +9,8 @@ urlpatterns = [
 	url(r'^gestionnaire/', 'cooperative.views.gestionnaire', name='gestionnaire'),
 	
     url(r'^admin/', include(admin.site.urls)),
-]
+	
+	#login
+	url(r'^login/', 'django.contrib.auth.views.login',{'template_name': 'login.html'}),
+	url(r'^logout/', 'django.contrib.auth.views.logout',{'next_page': '/'}),
+	]
