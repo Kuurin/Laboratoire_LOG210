@@ -43,6 +43,7 @@ def gestionnaire(request):
 	if Gestionnaire.objects.count() is 0:
 		message = "Veuillez créer un compte gestionnaire"
 		if form.is_valid():
+			title = "Gestionnaire login"
 			instance = form.save()
 			html = "gestionnairelogin.html"
 	#signin
@@ -50,7 +51,11 @@ def gestionnaire(request):
 		form = GestionnaireForm(request.POST or None)
 		html = "gestionnairelogin.html"
 		message = "Veuillez vous connecter"
-		if form
+		g = Gestionnaire.objects.all()[0]
+		#if g.email == form.cleaned_data.get("email") and g.password == form.cleaned_data.get("email"):
+		#	title = "Création coopérative"
+		#	message = "Vous êtes connecté. Créez maintenant une coopérative"
+		#	form = CooperativeForm(None)
 	
 	context = {
 		"title": title,
