@@ -23,6 +23,10 @@ class GestionnaireForm(forms.ModelForm):
 	class Meta: 
 		model = Gestionnaire
 		fields = ['email' , 'password']
+	def clean_email(self):
+		return self.cleaned_data.get('email')
+	def clean_password(self):
+		return self.cleaned_data.get('password')
 		
 		
 class CooperativeForm(forms.ModelForm):

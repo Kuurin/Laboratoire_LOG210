@@ -51,8 +51,8 @@ def gestionnaire(request):
 		form = GestionnaireForm(request.POST or None)
 		html = "gestionnairelogin.html"
 		message = "Veuillez vous connecter"
-		g = Gestionnaire.objects.all()[0]
-		#if g.email == form.cleaned_data.get("email") and g.password == form.cleaned_data.get("email"):
+		g = Gestionnaire.objects.get()
+		#if g.email == form.fields['email'].value and g.password == form.fields['password'].value:
 		#	title = "Création coopérative"
 		#	message = "Vous êtes connecté. Créez maintenant une coopérative"
 		#	form = CooperativeForm(None)
