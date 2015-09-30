@@ -6,6 +6,17 @@ from .forms import EtudiantForm, GestionnaireForm, CooperativeForm, LivreForm, D
 # Create your views here.
 def home(request):
 	title = "Coopérative"
+	context = {
+		"title": title,
+	}
+	#add a form
+	
+	html = "home.html"
+	
+	return render(request, html, context)
+	
+def etudiant(request):
+	title = "Étudiant"
 	form = EtudiantForm(request.POST or None)
 	#form = EtudiantForm(request.POST or None, initial={'email': title})
 	context = {
@@ -14,11 +25,28 @@ def home(request):
 	}
 	#add a form
 	
-	html = "home.html"
+	html = "etudiant.html"
 	if form.is_valid():
 		instance = form.save(commit=False)
 		instance.save()
-		html = "home2.html"
+	
+	
+	return render(request, html, context)
+	
+def gestionnaire(request):
+	title = "Gestionnaire"
+	form = EtudiantForm(request.POST or None)
+	#form = EtudiantForm(request.POST or None, initial={'email': title})
+	context = {
+		"title": title,
+		"form": form
+	}
+	#add a form
+	
+	html = "gestionnaire.html"
+	if form.is_valid():
+		instance = form.save(commit=False)
+		instance.save()
 	
 	
 	return render(request, html, context)

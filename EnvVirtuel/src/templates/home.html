@@ -1,10 +1,15 @@
+{% extends 'base.html' %}
 
-<h1>{{ title }}</h1>
+{% block second_titre %}   {{title}}  {% endblock %}
 
-<form method='POST' action=''>{% csrf_token %}
-	{{form.as_p}}
 
-	<input type='submit' value='Sign up'>
+
+
+{% block content %}
+
+<a href="{% url 'cooperative.views.etudiant' %}">Je suis un étudiant</a>
+<p>
+<a href="{% url 'cooperative.views.gestionnaire' %}">Je suis un gestionnaire</a>
+
 	
-	</input>
-</form>
+{% endblock %}
