@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 
 #pour register
 #from django.contrib.auth.forms import UserCreationForm
-from projet_log210.forms import EtudiantRegistrationForm
+from projet_log210.forms import EtudiantRegistrationForm, GestionnaireRegistrationForm
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib import auth
@@ -32,7 +32,7 @@ def home(request):
 	
 #register
 
-def register_user(request):
+def register_user_etudiant(request):
 	if request.method == 'POST':
 		form = EtudiantRegistrationForm(request.POST)
 		if form.is_valid():
@@ -42,7 +42,19 @@ def register_user(request):
 	args = {}
 	args.update(csrf(request))
 	args ['form'] = EtudiantRegistrationForm()
-	return render_to_response ('register.html', args)
+	return render_to_response ('registeretudiant.html', args)
+	
+def register_user_gestionnaire(request):
+	if request.method == 'POST':
+		form = GestionnaireRegistrationForm(request.POST)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect('/register_success/')
+	
+	args = {}
+	args.update(csrf(request))
+	args ['form'] = GestionnaireRegistrationForm()
+	return render_to_response ('registergestionnaire.html', args)
 
 def register_success(request):
 	return render_to_response('register_success.html')
@@ -67,7 +79,7 @@ def etudiant(request):
 	return render(request, html, context)
 	
 def gestionnaire(request):
-	title = "Gestionnaire"
+	#title = "Gestionnaire"
 	form = GestionnaireForm(request.POST or None)
 	html = "gestionnaire.html"
 	
@@ -98,7 +110,7 @@ def gestionnaire(request):
 	
 	
 	return render(request, html, context)
-	
+
 #def contact(request):
 #	form = ContactForm(request.POST or None)
 #	if form.is_valid():
