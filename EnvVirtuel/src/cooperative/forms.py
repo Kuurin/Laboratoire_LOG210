@@ -1,9 +1,8 @@
 from django import forms
 
-from .models import Etudiant, Gestionnaire, Cooperative, Livre, DescriptionLivre
+from .models import Etudiant,Gestionnaire, Cooperative, Livre, DescriptionLivre
 
 	
-
 class EtudiantForm(forms.ModelForm):
 	class Meta: 
 		model = Etudiant
@@ -18,6 +17,7 @@ class EtudiantForm(forms.ModelForm):
 		if not len(c_no_tel)==10:
 			raise forms.ValidationError("Veuillez entrer les 10 chiffres du numéro de téléphone")
 		return c_no_tel
+		
 	
 class GestionnaireForm(forms.ModelForm):
 	class Meta: 

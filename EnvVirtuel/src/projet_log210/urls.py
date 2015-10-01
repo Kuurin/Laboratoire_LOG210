@@ -15,4 +15,6 @@ urlpatterns = [
 	url(r'^logout/', 'django.contrib.auth.views.logout',{'next_page': '/'}),
 	url(r'^register/', 'cooperative.views.register_user',),
 	url(r'^register_success/', 'cooperative.views.register_success',),
+	
+	
 	]

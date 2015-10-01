@@ -13,7 +13,7 @@ from django.shortcuts import render_to_response
 from django.contrib import auth
 from django.core.context_processors import csrf
 
-from .forms import EtudiantForm, GestionnaireForm, CooperativeForm, LivreForm, DescriptionLivreForm
+from .forms import EtudiantForm,GestionnaireForm, CooperativeForm, LivreForm, DescriptionLivreForm
 # Create your views here.
 
 
@@ -44,6 +44,7 @@ def register_user(request):
 
 def register_success(request):
 	return render_to_response('register_success.html')
+	
 	
 def etudiant(request):
 	title = "Étudiant"
