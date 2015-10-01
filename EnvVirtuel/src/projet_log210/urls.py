@@ -9,6 +9,7 @@ urlpatterns = [
 	url(r'^gestionnaire/', 'cooperative.views.gestionnaire', name='gestionnaire'),
 	
     url(r'^admin/', include(admin.site.urls)),
+	url(r'^registercoop/', 'cooperative.views.registercoop',),
 	
 	#login
 	url(r'^login/', 'django.contrib.auth.views.login',{'template_name': 'login.html'}),

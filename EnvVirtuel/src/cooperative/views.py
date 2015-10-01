@@ -49,7 +49,7 @@ def register_user_gestionnaire(request):
 		form = GestionnaireRegistrationForm(request.POST)
 		if form.is_valid():
 			form.save()
-			return HttpResponseRedirect('/register_success/')
+			return HttpResponseRedirect('/registercoop/')
 	
 	args = {}
 	args.update(csrf(request))
@@ -59,6 +59,23 @@ def register_user_gestionnaire(request):
 def register_success(request):
 	return render_to_response('register_success.html')
 	
+
+def registercoop(request):
+	title = "Enregistrer la coopérative"
+	form = CooperativeForm(request.POST or None)
+	context = {
+		"title": title,
+		"form": form
+	}
+	
+	html = "registergen.html"
+	if form.is_valid():
+		instance = form.save(commit=False)
+		instance.save()
+		return HttpResponseRedirect('/register_success/')
+	
+	
+	return render(request, html, context)
 	
 def etudiant(request):
 	title = "Étudiant"
