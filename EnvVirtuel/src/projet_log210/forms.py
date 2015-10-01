@@ -41,7 +41,7 @@ class GestionnaireRegistrationForm(UserCreationForm):
 	
 	
 	def save(self,  commit=True):
-		user = super(EtudiantRegistrationForm, self).save(commit=False)
+		user = super(GestionnaireRegistrationForm, self).save(commit=False)
 		user.email = self.cleaned_data['email']
 		
 		if commit:
