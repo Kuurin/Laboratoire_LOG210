@@ -6,10 +6,7 @@
 	<h2>Register</h2>
 	<form action ="/register/" method = "post">{% csrf_token %}
 
-	<!--{{form}}-->
-	<tr><th><label for="id_username">Username:</label></th><td><input id="id_username" maxlength="30" name="username" type="text" /><br /><span class="helptext">Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.</span></td></tr>
-	<tr><th><label for="id_password1">Password:</label></th><td><input id="id_password1" name="password1" type="password" /></td></tr>
-	<tr><th><label for="id_password2">Password confirmation:</label></th><td><input id="id_password2" name="password2" type="password" /><br /><span class="helptext">Enter the same password as above, for verification.</span></td></tr>
+	{{form.as_p}}
 	<p>
 	<input type = "submit" value = "Register"/>
 	</form>

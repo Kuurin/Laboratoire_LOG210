@@ -7,7 +7,8 @@ from .models import Gestionnaire
 from django.contrib.auth.decorators import login_required
 
 #pour register
-from django.contrib.auth.forms import UserCreationForm
+#from django.contrib.auth.forms import UserCreationForm
+from projet_log210.forms import EtudiantRegistrationForm
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib import auth
@@ -21,25 +22,26 @@ def home(request):
 	title = "Coopérative"
 	context = {
 		"title": title,
+		'user':request.user,
 	}
 	#add a form
 	
 	html = "home.html"
 	
-	return render(request, html, {'user':request.user}) 
+	return render(request, html, context) 
 	
 #register
 
 def register_user(request):
 	if request.method == 'POST':
-		form = UserCreationForm(request.POST)
+		form = EtudiantRegistrationForm(request.POST)
 		if form.is_valid():
 			form.save()
 			return HttpResponseRedirect('/register_success/')
 	
 	args = {}
 	args.update(csrf(request))
-	args ['form'] = UserCreationForm()
+	args ['form'] = EtudiantRegistrationForm()
 	return render_to_response ('register.html', args)
 
 def register_success(request):
