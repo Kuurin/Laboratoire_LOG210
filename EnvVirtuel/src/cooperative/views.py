@@ -51,6 +51,11 @@ def register_user_etudiant(request):
 		return render_to_response ('registeretudiant.html', args)
 	
 def register_user_gestionnaire(request):
+	if not len(User.objects.filter(is_staff=True)) == 1:
+		args = {"title": 'Coopérative',
+		'user':request.user,"message":"Il ne peut y avoir qu'un seul gestionnaire."}
+		args.update(csrf(request))
+		return render(request, 'home.html' , args)
 	form = GestionnaireRegistrationForm(request.POST or None)
 	if request.method == 'POST':
 		if form.is_valid():
@@ -81,6 +86,7 @@ def registercoop(request):
 		"title": title,
 		"form": form
 	}
+	context.update(csrf(request))
 	
 	html = "registergen.html"
 	if form.is_valid():
