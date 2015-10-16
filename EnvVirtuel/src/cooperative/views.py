@@ -5,6 +5,7 @@ from .models import Gestionnaire
 
 #pour login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 #pour register
 #from django.contrib.auth.forms import UserCreationForm
@@ -54,6 +55,9 @@ def register_user_gestionnaire(request):
 	if request.method == 'POST':
 		if form.is_valid():
 			form.save()
+			u=User.objects.get(username=form.cleaned_data['username'])
+			u.is_staff=True;
+			u.save()
 			return HttpResponseRedirect('/registercoop/')
 		else: 
 			args = {}
@@ -64,7 +68,7 @@ def register_user_gestionnaire(request):
 		args = {}
 		args.update(csrf(request))
 		args ['form'] = form
-		return render_to_response (request, 'registergestionnaire.html', args)
+		return render_to_response ('registergestionnaire.html', args)
 
 def register_success(request):
 	return render_to_response('register_success.html')
@@ -87,55 +91,26 @@ def registercoop(request):
 	
 	return render(request, html, context)
 	
-def etudiant(request):
+def optionsetudiant(request):
 	title = "Étudiant"
-	form = EtudiantForm(request.POST or None)
-	#form = EtudiantForm(request.POST or None, initial={'email': title})
+	html = "optionsetudiant.html"
+	message = "Ici vont se trouver les options pour les étudiants"
+	
 	context = {
 		"title": title,
-		"form": form
+		"message":message,
 	}
-	#add a form
-	
-	html = "etudiant.html"
-	if form.is_valid():
-		instance = form.save(commit=False)
-		instance.save()
-	
-	
 	return render(request, html, context)
 	
-def gestionnaire(request):
-	#title = "Gestionnaire"
-	form = GestionnaireForm(request.POST or None)
-	html = "gestionnaire.html"
-	
-	#sign up
-	if Gestionnaire.objects.count() is 0:
-		message = "Veuillez créer un compte gestionnaire"
-		if form.is_valid():
-			title = "Gestionnaire login"
-			instance = form.save()
-			html = "gestionnairelogin.html"
-	#signin
-	else:
-		form = GestionnaireForm(request.POST or None)
-		html = "gestionnairelogin.html"
-		message = "Veuillez vous connecter"
-		g = Gestionnaire.objects.get()
-		#if g.email == form.fields['email'].value and g.password == form.fields['password'].value:
-		#	title = "Création coopérative"
-		#	message = "Vous êtes connecté. Créez maintenant une coopérative"
-		#	form = CooperativeForm(None)
+def optionsgestionnaire(request):
+	title = "Gestionnaire"
+	html = "optionsgestionnaire.html"
+	message = "Ici vont se trouver les options pour le gestionnaire"
 	
 	context = {
 		"title": title,
-		"form": form,
 		"message": message,
 	}
-	
-	
-	
 	return render(request, html, context)
 
 #def contact(request):

@@ -50,15 +50,13 @@ class GestionnaireRegistrationForm(UserCreationForm):
 		
 	#validation ou email	
 	def clean_username(self):
-		try:
-			#un module de validation d'adresse courriel a été utilisé
-			#son utilisation a été expliquée à l'adresse suivante
-			#https://pypi.python.org/pypi/validate_email
-			#consultée le 16 octobre 2015
-			#L'information vient du Python Software Foundation [US]
-			if not validate_email(value):
-				raise forms.ValidationError("Veuillez entrer une adresse courriel valide")
-		except:
+		value = self.cleaned_data['username']
+		#un module de validation d'adresse courriel a été utilisé
+		#son utilisation a été expliquée à l'adresse suivante
+		#https://pypi.python.org/pypi/validate_email
+		#consultée le 16 octobre 2015
+		#L'information vient du Python Software Foundation [US]
+		if not validate_email(value):
 			raise forms.ValidationError("Veuillez entrer une adresse courriel valide")
 		return value
 	

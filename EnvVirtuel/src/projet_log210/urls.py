@@ -5,8 +5,8 @@ from django.contrib import admin
 urlpatterns = [
     # Examples:
     url(r'^$', 'cooperative.views.home', name='home'),
-	url(r'^etudiant/', 'cooperative.views.etudiant', name='etudiant'),
-	url(r'^gestionnaire/', 'cooperative.views.gestionnaire', name='gestionnaire'),
+	url(r'^optionsetudiant/', 'cooperative.views.optionsetudiant', ),
+	url(r'^optionsgestionnaire/', 'cooperative.views.optionsgestionnaire', ),
 	
     url(r'^admin/', include(admin.site.urls)),
 	url(r'^registercoop/', 'cooperative.views.registercoop',),
