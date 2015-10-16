@@ -33,28 +33,38 @@ def home(request):
 #register
 
 def register_user_etudiant(request):
+	form = EtudiantRegistrationForm(request.POST or None)
 	if request.method == 'POST':
-		form = EtudiantRegistrationForm(request.POST)
 		if form.is_valid():
 			form.save()
 			return HttpResponseRedirect('/register_success/')
-	
-	args = {}
-	args.update(csrf(request))
-	args ['form'] = EtudiantRegistrationForm()
-	return render_to_response ('registeretudiant.html', args)
+		else: 
+			args = {}
+			args.update(csrf(request))
+			args ['form'] = form
+			return render(request, 'registeretudiant.html' , args)
+	else:
+		args = {}
+		args.update(csrf(request))
+		args ['form'] = EtudiantRegistrationForm()
+		return render_to_response ('registeretudiant.html', args)
 	
 def register_user_gestionnaire(request):
+	form = GestionnaireRegistrationForm(request.POST or None)
 	if request.method == 'POST':
-		form = GestionnaireRegistrationForm(request.POST)
 		if form.is_valid():
 			form.save()
 			return HttpResponseRedirect('/registercoop/')
-	
-	args = {}
-	args.update(csrf(request))
-	args ['form'] = GestionnaireRegistrationForm()
-	return render_to_response ('registergestionnaire.html', args)
+		else: 
+			args = {}
+			args.update(csrf(request))
+			args ['form'] = form
+			return render(request, 'registergestionnaire.html' , args)
+	else:
+		args = {}
+		args.update(csrf(request))
+		args ['form'] = form
+		return render_to_response (request, 'registergestionnaire.html', args)
 
 def register_success(request):
 	return render_to_response('register_success.html')
