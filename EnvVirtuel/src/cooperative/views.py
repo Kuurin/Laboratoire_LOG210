@@ -119,6 +119,14 @@ def optionsgestionnaire(request):
 	}
 	return render(request, html, context)
 
+
+#ame
+def remise(request):
+	
+	
+	return render(request,"remise.html",{})
+	
+	
 #def contact(request):
 #	form = ContactForm(request.POST or None)
 #	if form.is_valid():
