@@ -22,22 +22,27 @@ def get_url_livre(isbn):
 	return url
 		
 def get_titre(isbn):
-	html = get_html(get_url_livre(isbn))
-	soup = BeautifulSoup(html, 'html.parser')
-	titre = soup.find(id="productTitle").string
+	try:
+		html = get_html(get_url_livre(isbn))
+		soup = BeautifulSoup(html, 'html.parser')
+		titre = soup.find(id="productTitle").string
+	except:
+		titre = " "
 	return str(titre)
 	
 	
 def get_auteur(isbn):
-	html = get_html(get_url_livre(isbn))
-	soup = BeautifulSoup(html, 'html.parser')
-	auteur = " "
-	for span in soup.find_all('span',{ "class" : "author notFaded" }):
-		for link in span.find_all('a'):
-			auteur = link.string
-			break
+	try :
+		html = get_html(get_url_livre(isbn))
+		soup = BeautifulSoup(html, 'html.parser')
+		auteur = " "
+		for span in soup.find_all('span',{ "class" : "author notFaded" }):
+			for link in span.find_all('a'):
+				auteur = link.string
+				break
 	
-	
+	except: 
+		auteur = " "
 	#for link in soup.find_all('span',{ "class" : "a-size-small a-color-base" }):
 	#	if compteur is 5 :
 	#		auteur = link.string
@@ -46,18 +51,21 @@ def get_auteur(isbn):
 	return str(auteur)
 
 def get_pages(isbn):
-	html = get_html(get_url_livre(isbn))
-	soup = BeautifulSoup(html, 'html.parser')
-	pages = " "
-	for td in soup.find_all('td', {"class" : "bucket"}):
-		for li in td.find_all('li'):
-			li = str(li)
-			debut = li.find("</b> ") + len("</b> ")
-			fin = li.find(" pages")
-			pages = li[debut:fin]
-			break
-	if not pages.isnumeric():
-		pages = "non affiché"
+	try:
+		html = get_html(get_url_livre(isbn))
+		soup = BeautifulSoup(html, 'html.parser')
+		pages = " "
+		for td in soup.find_all('td', {"class" : "bucket"}):
+			for li in td.find_all('li'):
+				li = str(li)
+				debut = li.find("</b> ") + len("</b> ")
+				fin = li.find(" pages")
+				pages = li[debut:fin]
+				break
+		if not pages.isnumeric():
+			pages = " "
+	except:
+		pages = " "
 	#soup_string = str(soup)
 	#debut = 0
 	#fin = 1
@@ -71,18 +79,21 @@ def get_pages(isbn):
 	return str(pages)
 
 def get_prix(isbn):
-	html = get_html(get_url_livre(isbn))
-	soup = BeautifulSoup(html, 'html.parser')
-	prix = " "
-	classe = "a-color-price"
-	for span in soup.find_all('span', {"class": classe}):
-		prix = span.string
-		break
-	nprix = ""
-	for char in prix:
-		if char.isnumeric() or char is "." or char is ",":
-			nprix = nprix + str(char)
-	prix = nprix
+	try:
+		html = get_html(get_url_livre(isbn))
+		soup = BeautifulSoup(html, 'html.parser')
+		prix = " "
+		classe = "a-color-price"
+		for span in soup.find_all('span', {"class": classe}):
+			prix = span.string
+			break
+		nprix = ""
+		for char in prix:
+			if char.isnumeric() or char is "." or char is ",":
+				nprix = nprix + str(char)
+		prix = nprix
+	except :
+		prix = " "
 	#classe = "a-size-medium a-color-price offer-price a-text-normal"
 	#for span in soup.find_all('span',{ "class" : classe }):
 	#	prix = span.string[5:len(span.string)]
