@@ -1,0 +1,15 @@
+{% extends 'baseetudiant.html' %}
+
+{% block second_titre %}   {{title}}  {% endblock %}
+
+
+
+{% block content %}
+		
+	
+	<pre>{{message}}</pre>
+	{% csrf_token %}
+
+	
+		
+{% endblock %}

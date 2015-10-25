@@ -169,7 +169,8 @@ def ajouterlivredescription(request):
 			"message": 'Vous avez ajouté un livre avec succès',
 		}
 		context.update(csrf(request))
-		return render_to_response('register_success.html')
+		html = 'register_success.html'
+		return  render(request, html, context)
 
 	isbn = form.cleaned_data['ISBN']
 	form = LivreForm(None, initial={'user':request.user.id, 'ISBN':isbn,"titre": isbnlib.get_titre(isbn),"auteur": isbnlib.get_auteur(isbn),"nb_pages": isbnlib.get_pages(isbn),"prix_neuf": isbnlib.get_prix(isbn),})
@@ -188,6 +189,25 @@ def ajouterlivredescription(request):
 	context.update(csrf(request))
 	
 	return  render(request, html, context)
+	
+def voirlivresetudiant(request):
+	title = 'Voici les livres que vous avez ajouté'
+	user_id = request.user.id
+	
+	message = "Il y a : \n\n"
+	livres = Livre.objects.filter(user=user_id)
+	for l in livres:
+		message = message + l.titre + '\n\n'
+		
+	html = "voirlivresetudiant.html"
+	context = {
+		"title": title,
+		"message": message, 
+	}
+	context.update(csrf(request))
+	
+	return  render(request, html, context)
+	
 #def contact(request):
 #	form = ContactForm(request.POST or None)
 #	if form.is_valid():

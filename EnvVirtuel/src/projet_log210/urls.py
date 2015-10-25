@@ -20,6 +20,8 @@ urlpatterns = [
 	
 	url(r'^ajouterlivre/', 'cooperative.views.ajouterlivre',),
 	url(r'^ajouterlivredescription/', 'cooperative.views.ajouterlivredescription',),
+	url(r'^voirlivresetudiant/', 'cooperative.views.voirlivresetudiant',),
+	
 
 	url(r'^remise/', 'cooperative.views.remise',name='remise'),
 	
