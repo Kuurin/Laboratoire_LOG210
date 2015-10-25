@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block second_titre %}   {{title}}  {% endblock %}
+
+
+
+{% block content %}
+		
+	
+	{{message}}
+	
+	<form action ="/ajouterlivredescription/" method = "post">{% csrf_token %}
+
+	{{form.as_p}}
+	<p>
+	<input type = "submit" value = "Enregistrer"/>
+	</form>
+		
+{% endblock %}

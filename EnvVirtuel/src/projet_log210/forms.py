@@ -7,7 +7,6 @@ from django.contrib.auth.forms import UserCreationForm
 #consultée le 16 octobre 2015
 #L'information vient du Python Software Foundation [US]
 from validate_email import validate_email
-from EnvVirtuel.src.cooperative.models import Livre
 
 class EtudiantRegistrationForm(UserCreationForm):
 	
@@ -70,27 +69,7 @@ class GestionnaireRegistrationForm(UserCreationForm):
 			
 		return user
 		
-class AjoutLivreForm():
-	
-	class Meta:
-		model = Livre
-		fields = ('isbn', 'titre', 'auteur', 'prix')
-		
-	def clean_isbn(self):
-		value = self.cleaned_data['isbn']
-		if not 10 <= value.length <= 13 | value.isalnum():	
-			raise forms.ValidationError("Veuillez entrer un ISBN/EAN/UPC valide")
-		return value
-	
-	def clean_titre(self):
-		value = self.cleaned_data['titre']
-		return value
-		
-	def clean_auteur(self):
-		value = self.cleaned_data['auteur']
-		if not value.isalpha() & ' ' in value & "'" in value:
-			raise forms.ValidationError("Veuillez entrer un nom valide")
-		return value
+
 		
 		
 		

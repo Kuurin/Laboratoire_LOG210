@@ -18,6 +18,9 @@ urlpatterns = [
 	url(r'^registeretudiant/', 'cooperative.views.register_user_etudiant',),
 	url(r'^register_success/', 'cooperative.views.register_success',),
 	
+	url(r'^ajouterlivre/', 'cooperative.views.ajouterlivre',),
+	url(r'^ajouterlivredescription/', 'cooperative.views.ajouterlivredescription',),
+
 	url(r'^remise/', 'cooperative.views.remise',name='remise'),
 	
 	

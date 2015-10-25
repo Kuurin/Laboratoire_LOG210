@@ -111,6 +111,7 @@ if __name__ == "__main__":
 	isbn = "0781444993"
 	isbn = "0131489062"
 	isbn = "978-1101898437"
+	isbn = '12093498567'
 
 	print('auteur : ' + get_auteur(isbn))
 	print('pages : ' + get_pages(isbn))

@@ -15,9 +15,10 @@ from django.shortcuts import render_to_response
 from django.contrib import auth
 from django.core.context_processors import csrf
 
-from .forms import EtudiantForm,GestionnaireForm, CooperativeForm, LivreForm, DescriptionLivreForm
+from .forms import *
 # Create your views here.
 
+import isbnlib
 
 def home(request):
 	title = "Coopérative"
@@ -126,7 +127,67 @@ def remise(request):
 	
 	return render(request,"remise.html",{})
 	
+
+def ajouterlivre(request):
+	title = "Ajouter le livre"
+	form = LivreForm(request.POST or None)
+	html = "ajouterlivre.html"
 	
+	#Morceau de code emprunté à l'adresse 
+	#http://stackoverflow.com/questions/1255976/how-do-you-dynamically-hide-form-fields-in-django
+	#consulté le 24-10-2015, réponse de Jason Christa en 2012
+	form.fields['user'].widget = form.fields['user'].hidden_widget()
+	form.fields['titre'].widget = form.fields['titre'].hidden_widget()
+	form.fields['auteur'].widget = form.fields['auteur'].hidden_widget()
+	form.fields['nb_pages'].widget = form.fields['nb_pages'].hidden_widget()
+	form.fields['prix_neuf'].widget = form.fields['prix_neuf'].hidden_widget()
+	form.fields['etat'].widget = form.fields['etat'].hidden_widget()
+	
+	context = {
+		"title": title,
+		"form": form
+	}
+	context.update(csrf(request))
+	
+	return  render(request, html, context)
+	
+
+def ajouterlivredescription(request):
+	title = "Ajouter la description du livre"
+	#formlivre = LivreForm(request.POST or None)
+	#formlivre à bloquer
+	form = LivreForm(request.POST or None)
+	#formdesc['isbn'] à bloquer
+	
+	
+	if form.is_valid():
+		print('le formulaire est valide')
+		instance = form.save(commit=False)
+		instance.save()
+		context = {
+			"title": title,
+			"message": 'Vous avez ajouté un livre avec succès',
+		}
+		context.update(csrf(request))
+		return render_to_response('register_success.html')
+
+	isbn = form.cleaned_data['ISBN']
+	form = LivreForm(None, initial={'user':request.user.id, 'ISBN':isbn,"titre": isbnlib.get_titre(isbn),"auteur": isbnlib.get_auteur(isbn),"nb_pages": isbnlib.get_pages(isbn),"prix_neuf": isbnlib.get_prix(isbn),})
+	form.fields['user'].widget = form.fields['user'].hidden_widget()
+	
+	#Morceau de code emprunté à l'adresse 
+	#http://stackoverflow.com/questions/4945802/how-can-i-disable-a-model-field-in-a-django-form
+	#consulté le 24-10-2015, réponse de Yuji 'Tomita' Tomita en 2011
+	form.fields['ISBN'].widget.attrs['readonly'] = True # text input
+	
+	html = "ajouterlivre.html"
+	context = {
+		"title": title,
+		"form": form,
+	}
+	context.update(csrf(request))
+	
+	return  render(request, html, context)
 #def contact(request):
 #	form = ContactForm(request.POST or None)
 #	if form.is_valid():

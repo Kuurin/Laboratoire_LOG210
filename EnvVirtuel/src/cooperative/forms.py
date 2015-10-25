@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Etudiant,Gestionnaire, Cooperative, Livre, DescriptionLivre
+from .models import *
 
 	
 class EtudiantForm(forms.ModelForm):
@@ -37,20 +37,31 @@ class CooperativeForm(forms.ModelForm):
 class LivreForm(forms.ModelForm):
 	class Meta: 
 		model = Livre
-		fields = ['ISBN' , 'etat', ]
-
-class DescriptionLivreForm(forms.ModelForm):
+		fields = ['user', 'ISBN' , 'titre', 'auteur', 'nb_pages', 'prix_neuf', 'etat',]
+	
+	
+class AjoutLivreForm():
+	
 	class Meta:
-		model = DescriptionLivre
-		fields = ['ISBN', 'titre', 'auteur', 'nb_pages', 'prix_neuf']
-	def clean_nb_pages(self):
-		c_nb_pages = float(self.cleaned_data.get('nb_pages'))
-		if float(c_nb_pages)<1:
-			raise forms.ValidationError("Veuillez entrer un nombre de pages valide")
-		return c_nb_pages
-	def clean_prix_neuf(self):
-		c_prix_neuf = float(self.cleaned_data.get('prix_neuf'))
-		if float(c_prix_neuf)<0.01:
-			raise forms.ValidationError("Veuillez entrer un prix valide")
-		return c_prix_neuf
+		model = Livre
+		fields = ('isbn', 'titre', 'auteur', 'prix')
+		
+	def clean_isbn(self):
+		value = self.cleaned_data['isbn']
+		if not 10 <= value.length <= 13 | value.isalnum():	
+			raise forms.ValidationError("Veuillez entrer un ISBN/EAN/UPC valide")
+		return value
+	
+	def clean_titre(self):
+		value = self.cleaned_data['titre']
+		return value
+		
+	def clean_auteur(self):
+		value = self.cleaned_data['auteur']
+		if not value.isalpha() & ' ' in value & "'" in value:
+			raise forms.ValidationError("Veuillez entrer un nom valide")
+		return value
+
+
+
 			

@@ -1,6 +1,8 @@
 from django.db import models
 import decimal
 
+from django.contrib.auth.models import User
+
 # Create your models here.
 class Etudiant(models.Model):
 	email = models.EmailField(blank=True, null=True)
@@ -26,19 +28,15 @@ class Cooperative(models.Model):
 		return self.nom
 		
 		
-class DescriptionLivre(models.Model):
+		
+class Livre(models.Model):
+	user = models.CharField(max_length=120, blank=True, null=True)
+
 	ISBN = models.CharField(max_length=16, blank=False, null=True)
 	titre = models.CharField(max_length=120, blank=False, null=True)
 	auteur = models.CharField(max_length=120, blank=False, null=True)
-	nb_pages = models.IntegerField()
+	nb_pages = models.IntegerField(default=1)
 	prix_neuf = models.CharField(max_length=14, blank=False, null=True)
-	
-	def __str__(self):
-		return self.ISBN
-		
-		
-class Livre(models.Model):
-	ISBN = models.CharField(max_length=16, blank=False, null=True)
 	etat_choix = (('0.75' , 'Comme neuf'), ('0.50' , 'Peu usé'), ('0.25', 'Très usé'), )
 	#prix 
 	etat = models.CharField(max_length=4,choices=etat_choix, default = '0.75')

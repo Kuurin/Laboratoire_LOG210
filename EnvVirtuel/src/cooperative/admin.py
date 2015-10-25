@@ -1,8 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
-from .forms import EtudiantForm, GestionnaireForm, CooperativeForm, LivreForm, DescriptionLivreForm
-from .models import Etudiant, Gestionnaire, Cooperative, Livre, DescriptionLivre
+from .forms import *
+from .models import *
 
 
 class EtudiantAdmin(admin.ModelAdmin):
@@ -25,8 +25,3 @@ class LivreAdmin(admin.ModelAdmin):
 	list_display = ["ISBN", "etat"]
 	form = LivreForm
 admin.site.register(Livre, LivreAdmin)
-
-class DescriptionLivreAdmin(admin.ModelAdmin):
-	list_display = ["ISBN", "titre", "auteur", "nb_pages", "prix_neuf"]
-	form = DescriptionLivreForm
-admin.site.register(DescriptionLivre, DescriptionLivreAdmin)

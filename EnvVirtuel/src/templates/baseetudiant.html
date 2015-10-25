@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block second_titre %}   {{title}}  {% endblock %}
+
+
+{% if not user.is_staff %}
+{% block content %}
+	
+		
+{% endblock %}
+{% endif %}
