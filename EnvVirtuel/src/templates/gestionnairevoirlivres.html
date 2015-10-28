@@ -10,11 +10,14 @@
 	<pre>{{message}}</pre>
 	
 	{% if form != "aucun" %}
-	<form action="/gestionnairerecus/" method="post">
+	<form action="/actionlivre/" method="post">
     {% csrf_token %}
 	
     {{ form.as_table }}
-	<input type="submit" value="Confirmer l'état puis recevoir" />
+	<input name="name" type="submit" value="Confirmer l'état puis recevoir" />
+	<input name="name" type="submit" value="Supprimer le livre" />
+	<input name="name" type="submit" value="Dupliquer le livre" />
+	<input name="name" type="submit" value="Modifier le livre" />
 	</form> 
 	{% endif %}
 	

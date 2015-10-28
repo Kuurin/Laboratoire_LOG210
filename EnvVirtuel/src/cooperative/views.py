@@ -212,12 +212,17 @@ def actionlivre(request):
 		return dupliquerlivre(request)
 	if request.POST.get("name") == "Modifier le livre":
 		return modifierlivre(request)
+	if request.POST.get("name") == "Confirmer l'état puis recevoir":
+		return gestionnairerecus(request)	
 	return home(request)
 
 def dupliquerlivre(request):
 	livre = Livre.objects.get(id=request.POST.get('livres'))
 	livre.dupliquer()
-	return voirlivresetudiant(request)
+	if not request.user.is_staff:
+		return voirlivresetudiant(request)
+	if request.user.is_staff:
+		return optionsgestionnaire(request)
 	
 def modifierlivre(request):
 	title = 'Livre à modifier'
@@ -251,12 +256,15 @@ def modifierlivre(request):
 def supprimerlivre(request):
 	livre = Livre.objects.get(id=request.POST.get('livres'))
 	livre.supprimer()
-	return voirlivresetudiant(request)
+	if not request.user.is_staff:
+		return voirlivresetudiant(request)
+	if request.user.is_staff:
+		return optionsgestionnaire(request)
 
 
 def gestionnairerecherche(request):
 	title = 'Recherche des livres à la coopérative'
-	message = 'Veuillez entrer vos critères de recherche'
+	message = 'Veuillez entrer vos critères de recherche ou rien pour accéder à tout'
 
 	form = RechercheForm(None)
 	html = "gestionnairerecherche.html"
@@ -269,7 +277,7 @@ def gestionnairerecherche(request):
 	return  render(request, html, context)
 	
 def gestionnairevoirlivres(request):
-	title = 'Recherche des livres à la coopérative'
+	title = 'Gestion des livres à la coopérative'
 	message = ''
 	
 	r_form = RechercheForm(request.POST or None)
@@ -277,9 +285,10 @@ def gestionnairevoirlivres(request):
 	
 	if len(LIVRES_TROUVES.filter(recu="0"))>0:
 		g_form = GestionLivreForm(LIVRES_TROUVES)
-		g_form.fields['livres'].label = "Livres recevables en un clique:"
+		g_form.fields['livres'].label = "Livres à éditer:"
 	else :
 		g_form = "aucun"
+		message = "Rien n'a été trouvé "
 		
 	html = "gestionnairevoirlivres.html"
 	context = {
