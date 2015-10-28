@@ -222,11 +222,16 @@ def dupliquerlivre(request):
 	if not request.user.is_staff:
 		return voirlivresetudiant(request)
 	if request.user.is_staff:
-		return optionsgestionnaire(request)
+		return gestionnairevoirlivres(request)
 	
 def modifierlivre(request):
 	title = 'Livre à modifier'
 	message = 'Veuillez modifier les champs voulus'
+	
+	r_form = RechercheForm(request.POST or None)
+	LIVRES_TROUVES = r_form.chercher()
+	r_form.cacher()
+	
 	try:
 		livre = Livre.objects.get(id=request.POST.get('livres'))
 		form = LivreForm(None ,initial={'user':livre.user, 'ISBN':livre.ISBN, 'titre':livre.titre, 'auteur':livre.auteur, 'nb_pages':livre.nb_pages,'prix_neuf':livre.prix_neuf,'etat':livre.etat,})
@@ -247,12 +252,13 @@ def modifierlivre(request):
 		if not request.user.is_staff:
 			return voirlivresetudiant(request)
 		if request.user.is_staff:
-			return optionsgestionnaire(request)
+			return gestionnairevoirlivres(request)
 		
 	context = {
 		"title":title,
 		"message":message,
 		"form":form,
+		"r_form":r_form,
 		}
 	context.update(csrf(request))
 	return  render(request, html, context)
@@ -263,7 +269,7 @@ def supprimerlivre(request):
 	if not request.user.is_staff:
 		return voirlivresetudiant(request)
 	if request.user.is_staff:
-		return optionsgestionnaire(request)
+		return gestionnairevoirlivres(request)
 
 
 def gestionnairerecherche(request):
@@ -286,6 +292,7 @@ def gestionnairevoirlivres(request):
 	
 	r_form = RechercheForm(request.POST or None)
 	LIVRES_TROUVES = r_form.chercher()
+	r_form.cacher()
 	
 	if len(LIVRES_TROUVES.filter(recu="0"))>0:
 		g_form = GestionLivreForm(LIVRES_TROUVES)
@@ -299,6 +306,7 @@ def gestionnairevoirlivres(request):
 		"title": title,
 		"message": message, 
 		"form" : g_form,
+		"r_form":r_form,
 	}
 	context.update(csrf(request))
 	return  render(request, html, context)
@@ -319,7 +327,7 @@ def gestionnairerecus(request):
 		"message": message, 
 	}
 	context.update(csrf(request))
-	return  render(request, html, context)
+	return  gestionnairevoirlivres(request)
 #def contact(request):
 #	form = ContactForm(request.POST or None)
 #	if form.is_valid():

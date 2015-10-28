@@ -65,20 +65,23 @@ class LivreForm(forms.ModelForm):
 	
 		
 class RechercheForm(forms.Form):
-	code = forms.CharField(label='Code', max_length=20)
-	titre = forms.CharField(label='Titre', max_length=200)
-	user_id = forms.CharField(label="Identifiant d'utilisateur", max_length=100)
-	
+	code = forms.CharField(label='Code', max_length=20,required=False)
+	r_titre = forms.CharField(label='Titre', max_length=200,required=False)
+	user_id = forms.CharField(label="Identifiant d'utilisateur", max_length=100,required=False)
+	def cacher(self):
+		self.fields['code'].widget = self.fields['code'].hidden_widget()
+		self.fields['r_titre'].widget = self.fields['r_titre'].hidden_widget()
+		self.fields['user_id'].widget = self.fields['user_id'].hidden_widget()
 	def chercher(self):
 		livres = Livre.objects.all()
 		c_code = self.data.get('code')
-		c_titre = self.data.get('titre')
+		c_titre = self.data.get('r_titre')
 		c_user = self.data.get('user_id')
-		if len(c_code) is not 0:
+		if c_code is not None:
 			livres = self.filtrer(livres,"ISBN",c_code)
-		if len(c_titre) is not 0:
-			livres = self.filtrer(livres,"titre",c_titre)
-		if len(c_user) is not 0:
+		if c_titre is not None:
+			livres = self.filtrer(livres,"r_titre",c_titre)
+		if c_user is not None:
 			livres = self.filtrer(livres,"user",c_user)
 		return livres
 	def contains(self,exp, str):
@@ -93,7 +96,7 @@ class RechercheForm(forms.Form):
 			for l in livres:
 				if not self.contains(exp, l.ISBN):
 					livres = livres.exclude(id=l.id)
-		if critere == "titre":
+		if critere == "r_titre":
 			for l in livres:
 				if not self.contains(exp, l.titre):
 					livres = livres.exclude(id=l.id)

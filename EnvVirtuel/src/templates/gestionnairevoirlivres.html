@@ -12,7 +12,7 @@
 	{% if form != "aucun" %}
 	<form action="/actionlivre/" method="post">
     {% csrf_token %}
-	
+	{{ r_form }}
     {{ form.as_table }}
 	<input name="name" type="submit" value="Confirmer l'état puis recevoir" />
 	<input name="name" type="submit" value="Supprimer le livre" />
