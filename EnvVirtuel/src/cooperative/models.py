@@ -50,3 +50,6 @@ class Livre(models.Model):
 	def remettre(self):
 		self.recu = "0.25"
 		self.save()
+		
+	def supprimer(self):
+		self.delete()

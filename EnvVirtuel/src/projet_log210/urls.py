@@ -26,6 +26,8 @@ urlpatterns = [
 	url(r'^gestionnairerecherche/', 'cooperative.views.gestionnairerecherche'),
 	url(r'^gestionnairevoirlivres/', 'cooperative.views.gestionnairevoirlivres'),
 	url(r'^gestionnairerecus/', 'cooperative.views.gestionnairerecus'),
+	url(r'^supprimerlivre/', 'cooperative.views.supprimerlivre'),
+	
 	
 	
 	

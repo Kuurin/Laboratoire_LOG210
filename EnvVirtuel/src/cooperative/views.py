@@ -189,22 +189,49 @@ def voirlivresetudiant(request):
 	
 	message = "Il y a : \n"
 	livres = Livre.objects.filter(user=request.user.username)
+	
 	for l in livres:
 		message = message + str(l) + "\n"
 		
+	if len(livres.filter(recu="0"))>0:
+		supprimer_form = GestionLivreForm(livres.filter(recu="0"))
+		supprimer_form.fields['livres'].label = "Livres supprimables en un clique:"
+	else :
+		supprimer_form = "aucun"
+	
 	html = "voirlivresetudiant.html"
+	context = {
+		"title": title,
+		"message": message,
+		"form": supprimer_form
+	}
+	context.update(csrf(request))
+	
+	return  render(request, html, context)
+	
+def supprimerlivre(request):
+	title = 'Livre supprimé'
+	message = 'Voici le livre supprimé: \n'
+	
+
+	livre = Livre.objects.get(id=request.POST.get('livres'))
+	
+	message = message + str(livre) + "\n"
+	
+	if request.user.is_staff:
+		html = "optionsgestionnaire.html"
+	else:
+		html = "optionsetudiant.html"
 	context = {
 		"title": title,
 		"message": message, 
 	}
 	context.update(csrf(request))
-	
+
+	livre.supprimer()
 	return  render(request, html, context)
-	#
-	#
-	#
-	#
-	#en travail
+
+
 def gestionnairerecherche(request):
 	title = 'Recherche des livres à la coopérative'
 	message = 'Veuillez entrer vos critères de recherche'
@@ -226,8 +253,12 @@ def gestionnairevoirlivres(request):
 	r_form = RechercheForm(request.POST or None)
 	LIVRES_TROUVES = r_form.chercher()
 	
-	g_form = GestionLivreForm(LIVRES_TROUVES)
-			
+	if len(LIVRES_TROUVES.filter(recu="0"))>0:
+		g_form = GestionLivreForm(LIVRES_TROUVES)
+		g_form.fields['livres'].label = "Livres recevables en un clique:"
+	else :
+		g_form = "aucun"
+		
 	html = "gestionnairevoirlivres.html"
 	context = {
 		"title": title,

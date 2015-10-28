@@ -87,9 +87,6 @@ class GestionLivreForm(forms.Form):
 	def __init__(self, livres, *args, **kwargs):
 		super(GestionLivreForm, self).__init__(*args, **kwargs)
 		if len(livres)>=1:
+			livres = livres.order_by('user')
 			self.fields['livres'] = forms.ModelChoiceField(queryset=livres, initial=livres[0], widget=forms.RadioSelect())
 	
-			
-	#def __init__(self, livres, *args, **kwargs):
-	#	super(GestionLivreForm, self).__init__(*args, **kwargs)
-	#	self.fields['livres'] =  forms.ModelMultipleChoiceField(queryset=livres,widget=forms.CheckboxSelectMultiple())

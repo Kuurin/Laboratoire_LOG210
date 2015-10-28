@@ -8,13 +8,15 @@
 		
 	<!--recevoir-->
 	<pre>{{message}}</pre>
+	
+	{% if form != "aucun" %}
 	<form action="/gestionnairerecus/" method="post">
     {% csrf_token %}
 	
     {{ form.as_table }}
 	<input type="submit" value="Confirmer l'état puis recevoir" />
 	</form> 
-
+	{% endif %}
 	
 		
 {% endblock %}
