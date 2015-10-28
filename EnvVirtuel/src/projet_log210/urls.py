@@ -20,10 +20,12 @@ urlpatterns = [
 	
 	url(r'^ajouterlivre/', 'cooperative.views.ajouterlivre',),
 	url(r'^ajouterlivredescription/', 'cooperative.views.ajouterlivredescription',),
-	url(r'^voirlivresetudiant/', 'cooperative.views.voirlivresetudiant',),
+	url(r'^etudiantvoirlivres/', 'cooperative.views.etudiantvoirlivres',),
+	url(r'^etudiantvoirofferts/', 'cooperative.views.etudiantvoirofferts',),
+	
 	
 
-	url(r'^gestionnairerecherche/', 'cooperative.views.gestionnairerecherche'),
+	url(r'^recherche/', 'cooperative.views.recherche'),
 	url(r'^gestionnairevoirlivres/', 'cooperative.views.gestionnairevoirlivres'),
 	url(r'^gestionnairerecus/', 'cooperative.views.gestionnairerecus'),
 	url(r'^actionlivre/', 'cooperative.views.actionlivre'),

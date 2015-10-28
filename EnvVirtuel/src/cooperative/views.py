@@ -179,7 +179,7 @@ def ajouterlivredescription(request):
 	
 	return  render(request, html, context)
 	
-def voirlivresetudiant(request):
+def etudiantvoirlivres(request):
 	user_id = request.user.id
 	title = "Livres non-éditables :"
 	livres = Livre.objects.filter(user=request.user.username)
@@ -191,12 +191,13 @@ def voirlivresetudiant(request):
 	
 	livres = Livre.objects.filter(user=request.user.username)
 	if len(livres.filter(recu="0"))>0:
+		title =""
 		g_form = GestionLivreForm(livres.filter(recu="0"))
 		g_form.fields['livres'].label = "Livre(s) éditable(s):"
 	else :
 		g_form = "aucun"
 	
-	html = "voirlivresetudiant.html"
+	html = "etudiantvoirlivres.html"
 	context = {
 		"title": title,
 		"form": g_form,
@@ -205,6 +206,33 @@ def voirlivresetudiant(request):
 	context.update(csrf(request))
 	
 	return  render(request, html, context)
+	
+def etudiantvoirofferts(request):
+	title = 'Gestion des livres à la coopérative'
+	message = ''
+	
+	r_form = RechercheForm(request.POST or None)
+	LIVRES_TROUVES = r_form.chercher()
+	r_form.cacher()
+
+	livres_dispo = LIVRES_TROUVES.exclude(recu="1").exclude(recu="0.75").exclude(recu="0.50").exclude(user=request.user)
+	if len(livres_dispo)>0:
+		g_form = GestionLivreForm(livres_dispo)
+		g_form.fields['livres'].label = "Livres à éditer:"
+	else :
+		g_form = "aucun"
+		message = "Rien n'a été trouvé "
+		
+	html = "etudiantvoirofferts.html"
+	context = {
+		"title": title,
+		"message": message, 
+		"form" : g_form,
+		"r_form":r_form,
+	}
+	context.update(csrf(request))
+	return  render(request, html, context)
+	
 def actionlivre(request):
 	if request.POST.get("name") == "Supprimer le livre":
 		return supprimerlivre(request)
@@ -220,7 +248,7 @@ def dupliquerlivre(request):
 	livre = Livre.objects.get(id=request.POST.get('livres'))
 	livre.dupliquer()
 	if not request.user.is_staff:
-		return voirlivresetudiant(request)
+		return etudiantvoirlivres(request)
 	if request.user.is_staff:
 		return gestionnairevoirlivres(request)
 	
@@ -272,12 +300,12 @@ def supprimerlivre(request):
 		return gestionnairevoirlivres(request)
 
 
-def gestionnairerecherche(request):
-	title = 'Recherche des livres à la coopérative'
+def recherche(request):
+	title = 'Recherche de livres à la coopérative'
 	message = 'Veuillez entrer vos critères de recherche ou rien pour accéder à tout'
 
 	form = RechercheForm(None)
-	html = "gestionnairerecherche.html"
+	html = "recherche.html"
 	context = {
 		"title": title,
 		"message": message, 

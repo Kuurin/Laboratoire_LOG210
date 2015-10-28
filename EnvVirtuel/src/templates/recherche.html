@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+{% if user.is_authenticated %}
+	{{message}}
+	{% if user.is_staff %} 
+	<form action ="/gestionnairevoirlivres/" method = "post">{% csrf_token %}
+
+	{{form.as_p}}
+	<p>
+	<input type = "submit" value = "Rechercher"/>
+	</form>{% endif %}
+	
+	{% if not user.is_staff %} 
+	<form action ="/etudiantvoirofferts/" method = "post">{% csrf_token %}
+
+	{{form.as_p}}
+	<p>
+	<input type = "submit" value = "Rechercher"/>
+	</form>{% endif %}
+
+{% endif %}
+	
+{% endblock %}
