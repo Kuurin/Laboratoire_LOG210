@@ -147,14 +147,10 @@ def ajouterlivre(request):
 
 def ajouterlivredescription(request):
 	title = "Ajouter la description du livre"
-	#formlivre = LivreForm(request.POST or None)
-	#formlivre à bloquer
 	form = LivreForm(request.POST or None)
-	#formdesc['isbn'] à bloquer
 	
 	
 	if form.is_valid():
-		print('le formulaire est valide')
 		instance = form.save(commit=False)
 		instance.save()
 		context = {
@@ -185,51 +181,77 @@ def ajouterlivredescription(request):
 	
 def voirlivresetudiant(request):
 	user_id = request.user.id
-	title = "Voici les livres que vous avez ajouté :\n" 
-	
-	message = "Il y a : \n"
+	title = "Livres non-éditables :"
 	livres = Livre.objects.filter(user=request.user.username)
+	livres = livres.exclude(recu="0")
 	
+	message=""
 	for l in livres:
 		message = message + str(l) + "\n"
-		
+	
+	livres = Livre.objects.filter(user=request.user.username)
 	if len(livres.filter(recu="0"))>0:
-		supprimer_form = GestionLivreForm(livres.filter(recu="0"))
-		supprimer_form.fields['livres'].label = "Livres supprimables en un clique:"
+		g_form = GestionLivreForm(livres.filter(recu="0"))
+		g_form.fields['livres'].label = "Livre(s) éditable(s):"
 	else :
-		supprimer_form = "aucun"
+		g_form = "aucun"
 	
 	html = "voirlivresetudiant.html"
 	context = {
 		"title": title,
+		"form": g_form,
 		"message": message,
-		"form": supprimer_form
 	}
 	context.update(csrf(request))
 	
+	return  render(request, html, context)
+def actionlivre(request):
+	if request.POST.get("name") == "Supprimer le livre":
+		return supprimerlivre(request)
+	if request.POST.get("name") == "Dupliquer le livre":
+		return dupliquerlivre(request)
+	if request.POST.get("name") == "Modifier le livre":
+		return modifierlivre(request)
+	return home(request)
+
+def dupliquerlivre(request):
+	livre = Livre.objects.get(id=request.POST.get('livres'))
+	livre.dupliquer()
+	return voirlivresetudiant(request)
+	
+def modifierlivre(request):
+	title = 'Livre à modifier'
+	message = 'Veuillez modifier les champs voulus'
+	try:
+		livre = Livre.objects.get(id=request.POST.get('livres'))
+		form = LivreForm(None ,initial={'user':livre.user, 'ISBN':livre.ISBN, 'titre':livre.titre, 'auteur':livre.auteur, 'nb_pages':livre.nb_pages,'prix_neuf':livre.prix_neuf,'etat':livre.etat,})
+		livre.supprimer()
+	except:
+		form = LivreForm(request.POST or None)
+	form.fields['user'].widget = form.fields['user'].hidden_widget()
+	form.fields['ISBN'].widget.attrs['readonly'] = True # text input
+	html = "modifierlivre.html"
+	
+	if form.is_valid():
+		instance = form.save(commit=False)
+		instance.save()
+		message = 'Le livre a été modifié'
+		form = "aucun"
+		title = "Livre modifié"
+		message = "Le livre a été modifié"
+		
+	context = {
+		"title":title,
+		"message":message,
+		"form":form,
+		}
+	context.update(csrf(request))
 	return  render(request, html, context)
 	
 def supprimerlivre(request):
-	title = 'Livre supprimé'
-	message = 'Voici le livre supprimé: \n'
-	
-
 	livre = Livre.objects.get(id=request.POST.get('livres'))
-	
-	message = message + str(livre) + "\n"
-	
-	if request.user.is_staff:
-		html = "optionsgestionnaire.html"
-	else:
-		html = "optionsetudiant.html"
-	context = {
-		"title": title,
-		"message": message, 
-	}
-	context.update(csrf(request))
-
 	livre.supprimer()
-	return  render(request, html, context)
+	return voirlivresetudiant(request)
 
 
 def gestionnairerecherche(request):

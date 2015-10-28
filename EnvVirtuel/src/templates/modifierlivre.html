@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block second_titre %}   {{title}}  {% endblock %}
+
+
+
+{% block content %}
+		
+	
+	{{message}}
+	{% if form != "aucun" %}
+	<form action ="/modifierlivre/" method = "post">{% csrf_token %}
+	{{livres}}
+	{{form.as_p}}
+	<p>
+	<input type = "submit" value = "Enregistrer"/>
+	</form>
+	{% endif %}
+		
+{% endblock %}

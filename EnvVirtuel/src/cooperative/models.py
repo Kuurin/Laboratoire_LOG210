@@ -53,3 +53,7 @@ class Livre(models.Model):
 		
 	def supprimer(self):
 		self.delete()
+	def dupliquer(self):
+		n_livre = Livre.objects.get(id=self.id)
+		n_livre.id = None
+		n_livre.save()
