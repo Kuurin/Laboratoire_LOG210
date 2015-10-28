@@ -23,7 +23,10 @@ urlpatterns = [
 	url(r'^voirlivresetudiant/', 'cooperative.views.voirlivresetudiant',),
 	
 
-	url(r'^remise/', 'cooperative.views.remise',name='remise'),
+	url(r'^gestionnairerecherche/', 'cooperative.views.gestionnairerecherche'),
+	url(r'^gestionnairevoirlivres/', 'cooperative.views.gestionnairevoirlivres'),
+	url(r'^gestionnairerecus/', 'cooperative.views.gestionnairerecus'),
+	
 	
 	
 	]

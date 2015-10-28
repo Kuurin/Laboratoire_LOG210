@@ -119,13 +119,6 @@ def optionsgestionnaire(request):
 		"message": message,
 	}
 	return render(request, html, context)
-
-
-#ame
-def remise(request):
-	
-	
-	return render(request,"remise.html",{})
 	
 
 def ajouterlivre(request):
@@ -173,7 +166,7 @@ def ajouterlivredescription(request):
 		return  render(request, html, context)
 
 	isbn = form.cleaned_data['ISBN']
-	form = LivreForm(None, initial={'user':request.user.id, 'ISBN':isbn,"titre": isbnlib.get_titre(isbn),"auteur": isbnlib.get_auteur(isbn),"nb_pages": isbnlib.get_pages(isbn),"prix_neuf": isbnlib.get_prix(isbn),})
+	form = LivreForm(None, initial={'user':request.user.username, 'ISBN':isbn,"titre": isbnlib.get_titre(isbn),"auteur": isbnlib.get_auteur(isbn),"nb_pages": isbnlib.get_pages(isbn),"prix_neuf": isbnlib.get_prix(isbn),})
 	form.fields['user'].widget = form.fields['user'].hidden_widget()
 	
 	#Morceau de code emprunté à l'adresse 
@@ -191,13 +184,13 @@ def ajouterlivredescription(request):
 	return  render(request, html, context)
 	
 def voirlivresetudiant(request):
-	title = 'Voici les livres que vous avez ajouté'
 	user_id = request.user.id
+	title = "Voici les livres que vous avez ajouté, en tant qu'utilisateur " + str(User.objects.filter(id=user_id)) + " :\n" 
 	
-	message = "Il y a : \n\n"
-	livres = Livre.objects.filter(user=user_id)
+	message = "Il y a : "
+	livres = Livre.objects.filter(user=request.user.username)
 	for l in livres:
-		message = message + l.titre + '\n\n'
+		message = message + str(l) + "\n"
 		
 	html = "voirlivresetudiant.html"
 	context = {
@@ -207,7 +200,60 @@ def voirlivresetudiant(request):
 	context.update(csrf(request))
 	
 	return  render(request, html, context)
+	#
+	#
+	#
+	#
+	#en travail
+def gestionnairerecherche(request):
+	title = 'Recherche des livres à la coopérative'
+	message = 'Veuillez entrer vos critères de recherche'
+
+	form = RechercheForm(None)
+	html = "gestionnairerecherche.html"
+	context = {
+		"title": title,
+		"message": message, 
+		"form" : form
+	}
+	context.update(csrf(request))
+	return  render(request, html, context)
 	
+def gestionnairevoirlivres(request):
+	title = 'Recherche des livres à la coopérative'
+	message = ''
+	
+	r_form = RechercheForm(request.POST or None)
+	LIVRES_TROUVES = r_form.chercher()
+	
+	g_form = GestionLivreForm(LIVRES_TROUVES)
+			
+	html = "gestionnairevoirlivres.html"
+	context = {
+		"title": title,
+		"message": message, 
+		"form" : g_form,
+	}
+	context.update(csrf(request))
+	return  render(request, html, context)
+	
+def gestionnairerecus(request):
+	title = 'Livre reçu'
+	message = 'Voici le livre dont le statut a été changé: \n'
+	
+
+	livre = Livre.objects.get(id=request.POST.get('livres'))
+	
+	livre.remettre()
+	message = message + str(livre) + "\n"
+	
+	html = "optionsgestionnaire.html"
+	context = {
+		"title": title,
+		"message": message, 
+	}
+	context.update(csrf(request))
+	return  render(request, html, context)
 #def contact(request):
 #	form = ContactForm(request.POST or None)
 #	if form.is_valid():

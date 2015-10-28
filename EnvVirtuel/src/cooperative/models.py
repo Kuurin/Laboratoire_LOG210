@@ -37,10 +37,16 @@ class Livre(models.Model):
 	auteur = models.CharField(max_length=120, blank=False, null=True)
 	nb_pages = models.IntegerField(default=1)
 	prix_neuf = models.CharField(max_length=14, blank=False, null=True)
-	etat_choix = (('0.75' , 'Comme neuf'), ('0.50' , 'Peu usé'), ('0.25', 'Très usé'), )
 	#prix 
+	etat_choix = (('0.75' , 'Comme neuf'), ('0.50' , 'Peu usé'), ('0.25', 'Très usé'), )
 	etat = models.CharField(max_length=4,choices=etat_choix, default = '0.75')
+	#s'il est reçu 
+	recu_choix = (('0' , 'Avec le vendeur'), ('0.25' , 'À la coopérative'), ('0.50' , 'Réservé'), ('0.75' , 'Payé'), ('1' , "Délivré à l'acheteur"),)
+	recu = models.CharField(max_length=4,choices=etat_choix, default = '0')
 	
 	def __str__(self):
-		return self.ISBN
+		return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix neuf de " + str(self.prix_neuf) + " $" + " en état " + self.etat + ". " + dict(self.recu_choix)[self.recu]
 		
+	def remettre(self):
+		self.recu = "0.25"
+		self.save()

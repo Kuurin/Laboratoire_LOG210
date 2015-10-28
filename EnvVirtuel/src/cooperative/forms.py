@@ -37,31 +37,34 @@ class CooperativeForm(forms.ModelForm):
 class LivreForm(forms.ModelForm):
 	class Meta: 
 		model = Livre
-		fields = ['user', 'ISBN' , 'titre', 'auteur', 'nb_pages', 'prix_neuf', 'etat',]
+		fields = ['user', 'ISBN' , 'titre', 'auteur', 'nb_pages', 'prix_neuf', 'etat']
+
+class RechercheForm(forms.Form):
+	code = forms.CharField(label='Code', max_length=20)
+	titre = forms.CharField(label='Titre', max_length=200)
+	user_id = forms.CharField(label="Identifiant d'utilisateur", max_length=100)
 	
-	
-class AjoutLivreForm():
-	
-	class Meta:
-		model = Livre
-		fields = ('isbn', 'titre', 'auteur', 'prix')
-		
-	def clean_isbn(self):
-		value = self.cleaned_data['isbn']
-		if not 10 <= value.length <= 13 | value.isalnum():	
-			raise forms.ValidationError("Veuillez entrer un ISBN/EAN/UPC valide")
-		return value
-	
-	def clean_titre(self):
-		value = self.cleaned_data['titre']
-		return value
-		
-	def clean_auteur(self):
-		value = self.cleaned_data['auteur']
-		if not value.isalpha() & ' ' in value & "'" in value:
-			raise forms.ValidationError("Veuillez entrer un nom valide")
-		return value
+	def chercher(self):
+		livres = Livre.objects.all()
+		c_code = self.data.get('code')
+		c_titre = self.data.get('titre')
+		c_user = self.data.get('user_id')
+		if len(c_code) is not 0:
+			livres = livres.filter(ISBN=c_code)
+		if len(c_titre) is not 0:
+			livres = livres.filter(titre=c_titre)
+		if len(c_user) is not 0:
+			livres = livres.filter(user=c_user)
+		return livres
 
 
-
+class GestionLivreForm(forms.Form):
+	def __init__(self, livres, *args, **kwargs):
+		super(GestionLivreForm, self).__init__(*args, **kwargs)
+		if len(livres)>=1:
+			self.fields['livres'] = forms.ModelChoiceField(queryset=livres, initial=livres[0], widget=forms.RadioSelect())
+	
 			
+	#def __init__(self, livres, *args, **kwargs):
+	#	super(GestionLivreForm, self).__init__(*args, **kwargs)
+	#	self.fields['livres'] =  forms.ModelMultipleChoiceField(queryset=livres,widget=forms.CheckboxSelectMultiple())

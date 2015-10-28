@@ -1,0 +1,14 @@
+{% extends 'basegestionnaire.html' %}
+
+
+{% block content %}
+		
+	{{message}}
+	<form action ="/gestionnairevoirlivres/" method = "post">{% csrf_token %}
+
+	{{form.as_p}}
+	<p>
+	<input type = "submit" value = "Rechercher"/>
+	</form>
+
+{% endblock %}

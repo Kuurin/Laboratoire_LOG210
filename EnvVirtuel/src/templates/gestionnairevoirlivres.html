@@ -1,0 +1,20 @@
+{% extends 'baseetudiant.html' %}
+
+{% block second_titre %}   {{title}}  {% endblock %}
+
+
+
+{% block content %}
+		
+	<!--recevoir-->
+	<pre>{{message}}</pre>
+	<form action="/gestionnairerecus/" method="post">
+    {% csrf_token %}
+	
+    {{ form.as_table }}
+	<input type="submit" value="Recevoir" />
+	</form> 
+
+	
+		
+{% endblock %}
