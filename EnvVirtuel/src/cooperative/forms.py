@@ -75,11 +75,32 @@ class RechercheForm(forms.Form):
 		c_titre = self.data.get('titre')
 		c_user = self.data.get('user_id')
 		if len(c_code) is not 0:
-			livres = livres.filter(ISBN=c_code)
+			livres = self.filtrer(livres,"ISBN",c_code)
 		if len(c_titre) is not 0:
-			livres = livres.filter(titre=c_titre)
+			livres = self.filtrer(livres,"titre",c_titre)
 		if len(c_user) is not 0:
-			livres = livres.filter(user=c_user)
+			livres = self.filtrer(livres,"user",c_user)
+		return livres
+	def contains(self,exp, str):
+		exp = exp.lower()
+		str = str.lower()
+		if exp in str:
+			return True
+		else:
+			return False
+	def filtrer(self,livres,critere,exp):
+		if critere == "ISBN":
+			for l in livres:
+				if not self.contains(exp, l.ISBN):
+					livres = livres.exclude(id=l.id)
+		if critere == "titre":
+			for l in livres:
+				if not self.contains(exp, l.titre):
+					livres = livres.exclude(id=l.id)
+		if critere == "user":
+			for l in livres:
+				if not self.contains(exp, l.user):
+					livres = livres.exclude(id=l.id)
 		return livres
 
 

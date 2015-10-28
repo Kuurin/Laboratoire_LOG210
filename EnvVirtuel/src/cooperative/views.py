@@ -244,6 +244,10 @@ def modifierlivre(request):
 		form = "aucun"
 		title = "Livre modifié"
 		message = "Le livre a été modifié"
+		if not request.user.is_staff:
+			return voirlivresetudiant(request)
+		if request.user.is_staff:
+			return optionsgestionnaire(request)
 		
 	context = {
 		"title":title,
