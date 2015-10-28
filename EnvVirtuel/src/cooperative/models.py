@@ -45,7 +45,7 @@ class Livre(models.Model):
 	recu = models.CharField(max_length=4,choices=etat_choix, default = '0')
 	
 	def __str__(self):
-		return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix neuf de " + str(self.prix_neuf) + " $" + " en état " + self.etat + ". " + dict(self.recu_choix)[self.recu]
+		return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix neuf de " + str(self.prix_neuf) + " $" + ", " + dict(self.etat_choix)[self.etat] + ". " + dict(self.recu_choix)[self.recu]
 		
 	def remettre(self):
 		self.recu = "0.25"

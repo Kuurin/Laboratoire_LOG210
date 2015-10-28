@@ -185,9 +185,9 @@ def ajouterlivredescription(request):
 	
 def voirlivresetudiant(request):
 	user_id = request.user.id
-	title = "Voici les livres que vous avez ajouté, en tant qu'utilisateur " + str(User.objects.filter(id=user_id)) + " :\n" 
+	title = "Voici les livres que vous avez ajouté :\n" 
 	
-	message = "Il y a : "
+	message = "Il y a : \n"
 	livres = Livre.objects.filter(user=request.user.username)
 	for l in livres:
 		message = message + str(l) + "\n"

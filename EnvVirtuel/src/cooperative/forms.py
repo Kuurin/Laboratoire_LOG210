@@ -38,7 +38,32 @@ class LivreForm(forms.ModelForm):
 	class Meta: 
 		model = Livre
 		fields = ['user', 'ISBN' , 'titre', 'auteur', 'nb_pages', 'prix_neuf', 'etat']
-
+	
+	def clean_ISBN(self):
+		isbn = self.cleaned_data.get('ISBN')
+		c_isbn = ""
+		for c in isbn:
+			if c.isdigit():
+				c_isbn=c_isbn+c
+		return c_isbn
+		
+	def clean_nb_pages(self):
+		nb_pages = self.cleaned_data.get('nb_pages')
+		if nb_pages<1:
+			raise forms.ValidationError("Le nombre de pages doit être supérieur à 0")
+		return nb_pages
+		
+	
+	def clean_prix_neuf(self):
+		try:
+			c_prix_neuf = float(self.cleaned_data.get('prix_neuf'))
+			if c_prix_neuf<0.01:
+				raise forms.ValidationError("Le prix doit être supérieur à 0$")
+			return c_prix_neuf
+		except:
+			raise forms.ValidationError("Le prix doit être un réel")
+	
+		
 class RechercheForm(forms.Form):
 	code = forms.CharField(label='Code', max_length=20)
 	titre = forms.CharField(label='Titre', max_length=200)
