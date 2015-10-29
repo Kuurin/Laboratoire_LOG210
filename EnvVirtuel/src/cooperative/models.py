@@ -53,6 +53,10 @@ class Livre(models.Model):
 		self.recu="0.50"
 		self.acheteur = str(acheteur)
 		self.save()
+	def dereserver(self, acheteur):
+		self.acheteur=""
+		self.recu = "0.25"
+		self.save()
 	def acheter(self,acheteur):
 		self.acheteur = str(acheteur)
 		self.recu="0.75"
@@ -85,10 +89,10 @@ class Argent(models.Model):
 	@staticmethod
 	def debourser(username, montant):
 		u = Argent.objects.get(username=username)
-		u.montant = str(float(u.montant) - float(montant))
+		u.montant = "%.2f" % round((float(u.montant) - float(montant)),2)
 		u.save()
 	@staticmethod	
 	def gagner(username, montant):
 		u = Argent.objects.get(username=username)
-		u.montant = str(float(u.montant) + float(montant))
+		u.montant = "%.2f" % round((float(u.montant) + float(montant)),2)
 		u.save()

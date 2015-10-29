@@ -218,13 +218,43 @@ def etudiantvoirlivres(request):
 	
 	return  render(request, html, context)
 	
+	
+	
 def etudiantvoirreserves(request):
-	title = "Livres achetés :"
+	title = "Livre(s) réservé(s) :"
 	if request.user.is_authenticated and not request.user.is_staff:
 		argent = Argent.objects.get(username=request.user.username)
 	else:
 		argent = ""
-	livres = Livre.objects.filter(acheteur=request.user.username)
+	livres = Livre.objects.filter(acheteur=request.user.username).filter(recu="0.50")
+	
+	message=""
+	
+	if len(livres)>0:
+		title =""
+		g_form = GestionLivreForm(livres)
+		g_form.fields['livres'].label = "Livre(s) réservé(s):"
+	else :
+		g_form = "aucun"
+	
+	html = "etudiantvoirreserves.html"
+	context = {
+		"title": title,
+		"form": g_form,
+		"message": message,
+		"argent":argent,
+	}
+	context.update(csrf(request))
+	
+	return  render(request, html, context)	
+	
+def etudiantvoirachetes(request):
+	title = "Livre(s) acheté(s) :"
+	if request.user.is_authenticated and not request.user.is_staff:
+		argent = Argent.objects.get(username=request.user.username)
+	else:
+		argent = ""
+	livres = Livre.objects.filter(acheteur=request.user.username).filter(recu="0.75")
 	
 	message=""
 	
@@ -235,7 +265,7 @@ def etudiantvoirreserves(request):
 	else :
 		g_form = "aucun"
 	
-	html = "etudiantvoirreserves.html"
+	html = "etudiantvoirachetes.html"
 	context = {
 		"title": title,
 		"form": g_form,
@@ -288,8 +318,10 @@ def actionlivre(request):
 		return gestionnairerecus(request)	
 	if request.POST.get("name") == "Réserver le livre":
 		return reserverlivre(request)
-	if request.POST.get("name") == "Acheter le livre":
+	if request.POST.get("name") == "Acheter le livre" or request.POST.get("name") == "Confirmer l'achat":
 		return acheterlivre(request)
+	if request.POST.get("name") == "Annuler la réservation":
+		return dereserverlivre(request)
 	return home(request)
 def reserverlivre(request):
 	title = "Réservation d'un livre"
@@ -311,6 +343,17 @@ def reserverlivre(request):
 	}
 	context.update(csrf(request))
 	return  render(request, html, context)
+
+def dereserverlivre(request):
+	title = "Achat d'un livre"
+	if request.user.is_authenticated and not request.user.is_staff:
+		argent = Argent.objects.get(username=request.user.username)
+	else:
+		argent = ""
+	livre = Livre.objects.get(id=request.POST.get('iden') or request.POST.get('livres'))
+	livre.dereserver(request.user)
+	return etudiantvoirreserves(request)
+
 	
 def acheterlivre(request):
 	title = "Achat d'un livre"
@@ -318,7 +361,7 @@ def acheterlivre(request):
 		argent = Argent.objects.get(username=request.user.username)
 	else:
 		argent = ""
-	livre = Livre.objects.get(id=request.POST.get('iden'))
+	livre = Livre.objects.get(id=request.POST.get('iden') or request.POST.get('livres'))
 	livre.acheter(request.user)
 	message = "Le livre a été acheté. Il est prêt à être récupéré. : " + str(livre)
 	form = LivreForm(None, initial={'iden':livre.id})

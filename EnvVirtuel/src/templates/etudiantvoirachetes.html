@@ -11,13 +11,10 @@
 	{% csrf_token %}
 
 	{% if form != "aucun" %}
-		<form action="/actionlivre/" method="post">
+		<form action="/actionlivre/" method="get">
 		{% csrf_token %}
 	
 		{{ form.as_table }}
-		
-		<input name="name" type="submit" value="Annuler la réservation" />
-		<input name="name" type="submit" value="Confirmer l'achat" />
 		</form> 
 	{% endif %}
 	
