@@ -90,5 +90,5 @@ class Argent(models.Model):
 	@staticmethod	
 	def gagner(username, montant):
 		u = Argent.objects.get(username=username)
-		u.montant = str(float(u.montant) - float(montant))
+		u.montant = str(float(u.montant) + float(montant))
 		u.save()
