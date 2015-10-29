@@ -1,0 +1,21 @@
+{% extends 'baseetudiant.html' %}
+
+{% block second_titre %}   {{title}}  {% endblock %}
+
+
+
+{% block content %}
+		
+	
+	<pre>{{message}}</pre>
+	
+	{% if form != "aucun" %}
+	<form action="/actionlivre/" method="post">
+    {% csrf_token %}
+	{{ form }}
+	<input name="name" type="submit" value="Acheter le livre" />
+	</form> 
+	{% endif %}
+	
+		
+{% endblock %}

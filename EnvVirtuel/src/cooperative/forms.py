@@ -35,9 +35,46 @@ class CooperativeForm(forms.ModelForm):
 		fields = ['nom' , 'adresse']
 		
 class LivreForm(forms.ModelForm):
+	iden = forms.CharField(label='Code', max_length=20,required=False)
 	class Meta: 
 		model = Livre
 		fields = ['user', 'ISBN' , 'titre', 'auteur', 'nb_pages', 'prix_neuf', 'etat']
+	
+	def __init__(self, *args, **kwargs):
+		super(LivreForm, self).__init__(*args, **kwargs)
+		self.fields['user'].widget = self.fields['user'].hidden_widget()
+		self.fields['iden'].widget = self.fields['iden'].hidden_widget()
+	def cacher(self):
+		self.fields['ISBN'].widget = self.fields['ISBN'].hidden_widget()
+		self.fields['user'].widget = self.fields['user'].hidden_widget()
+		self.fields['titre'].widget = self.fields['titre'].hidden_widget()
+		self.fields['auteur'].widget = self.fields['auteur'].hidden_widget()
+		self.fields['nb_pages'].widget = self.fields['nb_pages'].hidden_widget()
+		self.fields['prix_neuf'].widget = self.fields['prix_neuf'].hidden_widget()
+		self.fields['etat'].widget = self.fields['etat'].hidden_widget()
+		self.fields['ISBN'].required = False
+		self.fields['user'].required = False
+		self.fields['titre'].required = False
+		self.fields['auteur'].required = False
+		self.fields['nb_pages'].required = False
+		self.fields['prix_neuf'].required = False
+		self.fields['etat'].required = False
+		
+	def cacher_desc(self):
+		#Morceau de code emprunté à l'adresse 
+		#http://stackoverflow.com/questions/1255976/how-do-you-dynamically-hide-form-fields-in-django
+		#consulté le 24-10-2015, réponse de Jason Christa en 2012
+		self.fields['user'].widget = self.fields['user'].hidden_widget()
+		self.fields['titre'].widget = self.fields['titre'].hidden_widget()
+		self.fields['auteur'].widget = self.fields['auteur'].hidden_widget()
+		self.fields['nb_pages'].widget = self.fields['nb_pages'].hidden_widget()
+		self.fields['prix_neuf'].widget = self.fields['prix_neuf'].hidden_widget()
+		self.fields['etat'].widget = self.fields['etat'].hidden_widget()
+	def block_isbn(self):
+		#Morceau de code emprunté à l'adresse 
+		#http://stackoverflow.com/questions/4945802/how-can-i-disable-a-model-field-in-a-django-form
+		#consulté le 24-10-2015, réponse de Yuji 'Tomita' Tomita en 2011
+		self.fields['ISBN'].widget.attrs['readonly'] = True # text input
 	
 	def clean_ISBN(self):
 		isbn = self.cleaned_data.get('ISBN')
@@ -68,21 +105,27 @@ class RechercheForm(forms.Form):
 	code = forms.CharField(label='Code', max_length=20,required=False)
 	r_titre = forms.CharField(label='Titre', max_length=200,required=False)
 	user_id = forms.CharField(label="Identifiant d'utilisateur", max_length=100,required=False)
+	r_auteur = forms.CharField(label='Auteur', max_length=200,required=False)
+
 	def cacher(self):
 		self.fields['code'].widget = self.fields['code'].hidden_widget()
 		self.fields['r_titre'].widget = self.fields['r_titre'].hidden_widget()
 		self.fields['user_id'].widget = self.fields['user_id'].hidden_widget()
+		self.fields['r_auteur'].widget = self.fields['r_auteur'].hidden_widget()
 	def chercher(self):
 		livres = Livre.objects.all()
 		c_code = self.data.get('code')
 		c_titre = self.data.get('r_titre')
 		c_user = self.data.get('user_id')
+		c_r_auteur = self.data.get('r_auteur')
 		if c_code is not None:
 			livres = self.filtrer(livres,"ISBN",c_code)
 		if c_titre is not None:
 			livres = self.filtrer(livres,"r_titre",c_titre)
 		if c_user is not None:
 			livres = self.filtrer(livres,"user",c_user)
+		if c_r_auteur is not None:
+			livres = self.filtrer(livres,"r_auteur",c_r_auteur)
 		return livres
 	def contains(self,exp, str):
 		exp = exp.lower()
@@ -103,6 +146,10 @@ class RechercheForm(forms.Form):
 		if critere == "user":
 			for l in livres:
 				if not self.contains(exp, l.user):
+					livres = livres.exclude(id=l.id)
+		if critere == "r_auteur":
+			for l in livres:
+				if not self.contains(exp, l.auteur):
 					livres = livres.exclude(id=l.id)
 		return livres
 

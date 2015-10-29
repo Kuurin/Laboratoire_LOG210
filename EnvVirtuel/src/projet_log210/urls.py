@@ -22,6 +22,7 @@ urlpatterns = [
 	url(r'^ajouterlivredescription/', 'cooperative.views.ajouterlivredescription',),
 	url(r'^etudiantvoirlivres/', 'cooperative.views.etudiantvoirlivres',),
 	url(r'^etudiantvoirofferts/', 'cooperative.views.etudiantvoirofferts',),
+	url(r'^etudiantvoirreserves/', 'cooperative.views.etudiantvoirreserves',),
 	
 	
 

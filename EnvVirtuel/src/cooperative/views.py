@@ -126,15 +126,7 @@ def ajouterlivre(request):
 	form = LivreForm(request.POST or None)
 	html = "ajouterlivre.html"
 	
-	#Morceau de code emprunté à l'adresse 
-	#http://stackoverflow.com/questions/1255976/how-do-you-dynamically-hide-form-fields-in-django
-	#consulté le 24-10-2015, réponse de Jason Christa en 2012
-	form.fields['user'].widget = form.fields['user'].hidden_widget()
-	form.fields['titre'].widget = form.fields['titre'].hidden_widget()
-	form.fields['auteur'].widget = form.fields['auteur'].hidden_widget()
-	form.fields['nb_pages'].widget = form.fields['nb_pages'].hidden_widget()
-	form.fields['prix_neuf'].widget = form.fields['prix_neuf'].hidden_widget()
-	form.fields['etat'].widget = form.fields['etat'].hidden_widget()
+	form.cacher_desc()
 	
 	context = {
 		"title": title,
@@ -163,12 +155,8 @@ def ajouterlivredescription(request):
 
 	isbn = form.cleaned_data['ISBN']
 	form = LivreForm(None, initial={'user':request.user.username, 'ISBN':isbn,"titre": isbnlib.get_titre(isbn),"auteur": isbnlib.get_auteur(isbn),"nb_pages": isbnlib.get_pages(isbn),"prix_neuf": isbnlib.get_prix(isbn),})
-	form.fields['user'].widget = form.fields['user'].hidden_widget()
 	
-	#Morceau de code emprunté à l'adresse 
-	#http://stackoverflow.com/questions/4945802/how-can-i-disable-a-model-field-in-a-django-form
-	#consulté le 24-10-2015, réponse de Yuji 'Tomita' Tomita en 2011
-	form.fields['ISBN'].widget.attrs['readonly'] = True # text input
+	form.block_isbn()
 	
 	html = "ajouterlivre.html"
 	context = {
@@ -207,6 +195,29 @@ def etudiantvoirlivres(request):
 	
 	return  render(request, html, context)
 	
+def etudiantvoirreserves(request):
+	title = "Livres achetés :"
+	livres = Livre.objects.filter(acheteur=request.user.username)
+	
+	message=""
+	
+	if len(livres)>0:
+		title =""
+		g_form = GestionLivreForm(livres)
+		g_form.fields['livres'].label = "Livre(s) acheté(s) à récupérer:"
+	else :
+		g_form = "aucun"
+	
+	html = "etudiantvoirreserves.html"
+	context = {
+		"title": title,
+		"form": g_form,
+		"message": message,
+	}
+	context.update(csrf(request))
+	
+	return  render(request, html, context)
+	
 def etudiantvoirofferts(request):
 	title = 'Gestion des livres à la coopérative'
 	message = ''
@@ -215,7 +226,7 @@ def etudiantvoirofferts(request):
 	LIVRES_TROUVES = r_form.chercher()
 	r_form.cacher()
 
-	livres_dispo = LIVRES_TROUVES.exclude(recu="1").exclude(recu="0.75").exclude(recu="0.50").exclude(user=request.user)
+	livres_dispo = LIVRES_TROUVES.exclude(recu="1").exclude(recu="0.75").exclude(recu="0.50").exclude(recu="0").exclude(user=request.user)
 	if len(livres_dispo)>0:
 		g_form = GestionLivreForm(livres_dispo)
 		g_form.fields['livres'].label = "Livres à éditer:"
@@ -242,8 +253,43 @@ def actionlivre(request):
 		return modifierlivre(request)
 	if request.POST.get("name") == "Confirmer l'état puis recevoir":
 		return gestionnairerecus(request)	
+	if request.POST.get("name") == "Réserver le livre":
+		return reserverlivre(request)
+	if request.POST.get("name") == "Acheter le livre":
+		return acheterlivre(request)
 	return home(request)
-
+def reserverlivre(request):
+	title = "Réservation d'un livre"
+	livre = Livre.objects.get(id=request.POST.get('livres'))
+	message = "Le livre a été réservé : " + str(livre)
+	form = LivreForm(None, initial={'iden':livre.id})
+	form.cacher()
+	livre.reserver(request.user)
+	html = "etudiantreserverlivre.html"
+	context = {
+		"title": title,
+		"message": message, 
+		"form" : form,
+	}
+	context.update(csrf(request))
+	return  render(request, html, context)
+	
+def acheterlivre(request):
+	title = "Achat d'un livre"
+	livre = Livre.objects.get(id=request.POST.get('iden'))
+	message = "Le livre a été acheté. Il est prêt à être récupéré. : " + str(livre)
+	form = LivreForm(None, initial={'iden':livre.id})
+	form.cacher()
+	livre.acheter(request.user)
+	html = "etudiantacheterlivre.html"
+	context = {
+		"title": title,
+		"message": message, 
+		"form" : form,
+	}
+	context.update(csrf(request))
+	return  render(request, html, context)
+	
 def dupliquerlivre(request):
 	livre = Livre.objects.get(id=request.POST.get('livres'))
 	livre.dupliquer()
@@ -266,8 +312,7 @@ def modifierlivre(request):
 		livre.supprimer()
 	except:
 		form = LivreForm(request.POST or None)
-	form.fields['user'].widget = form.fields['user'].hidden_widget()
-	form.fields['ISBN'].widget.attrs['readonly'] = True # text input
+	form.block_isbn()
 	html = "modifierlivre.html"
 	
 	if form.is_valid():
@@ -278,7 +323,7 @@ def modifierlivre(request):
 		title = "Livre modifié"
 		message = "Le livre a été modifié"
 		if not request.user.is_staff:
-			return voirlivresetudiant(request)
+			return etudiantvoirlivres(request)
 		if request.user.is_staff:
 			return gestionnairevoirlivres(request)
 		
@@ -295,10 +340,9 @@ def supprimerlivre(request):
 	livre = Livre.objects.get(id=request.POST.get('livres'))
 	livre.supprimer()
 	if not request.user.is_staff:
-		return voirlivresetudiant(request)
+		return etudiantvoirlivres(request)
 	if request.user.is_staff:
 		return gestionnairevoirlivres(request)
-
 
 def recherche(request):
 	title = 'Recherche de livres à la coopérative'

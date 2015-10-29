@@ -31,6 +31,7 @@ class Cooperative(models.Model):
 		
 class Livre(models.Model):
 	user = models.CharField(max_length=120, blank=True, null=True)
+	acheteur = models.CharField(max_length=120, blank=True, null=True, default="")
 
 	ISBN = models.CharField(max_length=16, blank=False, null=True)
 	titre = models.CharField(max_length=120, blank=False, null=True)
@@ -41,16 +42,24 @@ class Livre(models.Model):
 	etat_choix = (('0.75' , 'Comme neuf'), ('0.50' , 'Peu usé'), ('0.25', 'Très usé'), )
 	etat = models.CharField(max_length=4,choices=etat_choix, default = '0.75')
 	#s'il est reçu 
-	recu_choix = (('0' , 'Avec le vendeur'), ('0.25' , 'À la coopérative'), ('0.50' , 'Réservé'), ('0.75' , 'Payé'), ('1' , "Délivré à l'acheteur"),)
+	recu_choix = (('0' , 'Avec le vendeur'), ('0.25' , 'À la coopérative'), ('0.50' , 'Réservé'), ('0.75' , 'Acheté'), ('1' , "Délivré à l'acheteur"),)
 	recu = models.CharField(max_length=4,choices=etat_choix, default = '0')
 	
 	def __str__(self):
+		if self.acheteur!="":
+			return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix neuf de " + str(self.prix_neuf) + " $" + ", " + dict(self.etat_choix)[self.etat] + ". " + dict(self.recu_choix)[self.recu] + " par " + self.acheteur
 		return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix neuf de " + str(self.prix_neuf) + " $" + ", " + dict(self.etat_choix)[self.etat] + ". " + dict(self.recu_choix)[self.recu]
-		
+	def reserver(self, acheteur):
+		self.recu="0.50"
+		self.acheteur = str(acheteur)
+		self.save()
+	def acheter(self,acheteur):
+		self.acheteur = str(acheteur)
+		self.recu="0.75"
+		self.save()
 	def remettre(self):
 		self.recu = "0.25"
 		self.save()
-		
 	def supprimer(self):
 		self.delete()
 	def dupliquer(self):

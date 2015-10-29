@@ -1,0 +1,20 @@
+{% extends 'baseetudiant.html' %}
+
+{% block second_titre %}   {{title}}  {% endblock %}
+
+
+
+{% block content %}
+		
+	
+	<pre>{{message}}</pre>
+	
+	{% if form != "aucun" %}
+	<form action="/optionsetudiant/" method="get">
+    {% csrf_token %}
+	<input type="submit" value="OK merci bon DIEU" />
+	</form> 
+	{% endif %}
+	
+		
+{% endblock %}
