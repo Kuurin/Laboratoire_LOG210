@@ -103,11 +103,16 @@ def registercoop(request):
 def optionsetudiant(request):
 	title = "Étudiant"
 	html = "optionsetudiant.html"
+	if request.user.is_authenticated and not request.user.is_staff:
+		argent = Argent.objects.get(username=request.user.username)
+	else:
+		argent = ""
 	message = "Ici vont se trouver les options pour les étudiants"
 	
 	context = {
 		"title": title,
 		"message":message,
+		"argent":argent,
 	}
 	return render(request, html, context)
 	
@@ -125,6 +130,10 @@ def optionsgestionnaire(request):
 
 def ajouterlivre(request):
 	title = "Ajouter le livre"
+	if request.user.is_authenticated and not request.user.is_staff:
+		argent = Argent.objects.get(username=request.user.username)
+	else:
+		argent = ""
 	form = LivreForm(request.POST or None)
 	html = "ajouterlivre.html"
 	
@@ -132,7 +141,8 @@ def ajouterlivre(request):
 	
 	context = {
 		"title": title,
-		"form": form
+		"form": form,
+		"argent":argent,
 	}
 	context.update(csrf(request))
 	
@@ -141,6 +151,10 @@ def ajouterlivre(request):
 
 def ajouterlivredescription(request):
 	title = "Ajouter la description du livre"
+	if request.user.is_authenticated and not request.user.is_staff:
+		argent = Argent.objects.get(username=request.user.username)
+	else:
+		argent = ""
 	form = LivreForm(request.POST or None)
 	
 	
@@ -150,6 +164,7 @@ def ajouterlivredescription(request):
 		context = {
 			"title": title,
 			"message": 'Vous avez ajouté un livre avec succès',
+			"argent":argent,
 		}
 		context.update(csrf(request))
 		html = 'register_success.html'
@@ -164,6 +179,7 @@ def ajouterlivredescription(request):
 	context = {
 		"title": title,
 		"form": form,
+		"argent":argent,
 	}
 	context.update(csrf(request))
 	
@@ -171,11 +187,15 @@ def ajouterlivredescription(request):
 	
 def etudiantvoirlivres(request):
 	user_id = request.user.id
+	if request.user.is_authenticated and not request.user.is_staff:
+		argent = Argent.objects.get(username=request.user.username)
+	else:
+		argent = ""
 	title = "Livres non-éditables :"
 	livres = Livre.objects.filter(user=request.user.username)
 	livres = livres.exclude(recu="0")
 	
-	message=str(Argent.objects.get(username=request.user.username)) + "\n\n"
+	message=""
 	for l in livres:
 		message = message + str(l) + "\n"
 	
@@ -192,6 +212,7 @@ def etudiantvoirlivres(request):
 		"title": title,
 		"form": g_form,
 		"message": message,
+		"argent":argent,
 	}
 	context.update(csrf(request))
 	
@@ -199,6 +220,10 @@ def etudiantvoirlivres(request):
 	
 def etudiantvoirreserves(request):
 	title = "Livres achetés :"
+	if request.user.is_authenticated and not request.user.is_staff:
+		argent = Argent.objects.get(username=request.user.username)
+	else:
+		argent = ""
 	livres = Livre.objects.filter(acheteur=request.user.username)
 	
 	message=""
@@ -215,6 +240,7 @@ def etudiantvoirreserves(request):
 		"title": title,
 		"form": g_form,
 		"message": message,
+		"argent":argent,
 	}
 	context.update(csrf(request))
 	
@@ -222,6 +248,10 @@ def etudiantvoirreserves(request):
 	
 def etudiantvoirofferts(request):
 	title = 'Gestion des livres à la coopérative'
+	if request.user.is_authenticated and not request.user.is_staff:
+		argent = Argent.objects.get(username=request.user.username)
+	else:
+		argent = ""
 	message = ''
 	
 	r_form = RechercheForm(request.POST or None)
@@ -242,6 +272,7 @@ def etudiantvoirofferts(request):
 		"message": message, 
 		"form" : g_form,
 		"r_form":r_form,
+		"argent":argent,
 	}
 	context.update(csrf(request))
 	return  render(request, html, context)
@@ -262,6 +293,10 @@ def actionlivre(request):
 	return home(request)
 def reserverlivre(request):
 	title = "Réservation d'un livre"
+	if request.user.is_authenticated and not request.user.is_staff:
+		argent = Argent.objects.get(username=request.user.username)
+	else:
+		argent = ""
 	livre = Livre.objects.get(id=request.POST.get('livres'))
 	message = "Le livre a été réservé : " + str(livre)
 	form = LivreForm(None, initial={'iden':livre.id})
@@ -272,22 +307,28 @@ def reserverlivre(request):
 		"title": title,
 		"message": message, 
 		"form" : form,
+		"argent":argent,
 	}
 	context.update(csrf(request))
 	return  render(request, html, context)
 	
 def acheterlivre(request):
 	title = "Achat d'un livre"
+	if request.user.is_authenticated and not request.user.is_staff:
+		argent = Argent.objects.get(username=request.user.username)
+	else:
+		argent = ""
 	livre = Livre.objects.get(id=request.POST.get('iden'))
+	livre.acheter(request.user)
 	message = "Le livre a été acheté. Il est prêt à être récupéré. : " + str(livre)
 	form = LivreForm(None, initial={'iden':livre.id})
 	form.cacher()
-	livre.acheter(request.user)
 	html = "etudiantacheterlivre.html"
 	context = {
 		"title": title,
 		"message": message, 
 		"form" : form,
+		"argent":argent,
 	}
 	context.update(csrf(request))
 	return  render(request, html, context)
@@ -302,6 +343,10 @@ def dupliquerlivre(request):
 	
 def modifierlivre(request):
 	title = 'Livre à modifier'
+	if request.user.is_authenticated and not request.user.is_staff:
+		argent = Argent.objects.get(username=request.user.username)
+	else:
+		argent = ""
 	message = 'Veuillez modifier les champs voulus'
 	
 	r_form = RechercheForm(request.POST or None)
@@ -334,6 +379,7 @@ def modifierlivre(request):
 		"message":message,
 		"form":form,
 		"r_form":r_form,
+		"argent":argent,
 		}
 	context.update(csrf(request))
 	return  render(request, html, context)
@@ -348,6 +394,10 @@ def supprimerlivre(request):
 
 def recherche(request):
 	title = 'Recherche de livres à la coopérative'
+	if request.user.is_authenticated and not request.user.is_staff:
+		argent = Argent.objects.get(username=request.user.username)
+	else:
+		argent = ""
 	message = 'Veuillez entrer vos critères de recherche ou rien pour accéder à tout'
 
 	form = RechercheForm(None)
@@ -355,7 +405,8 @@ def recherche(request):
 	context = {
 		"title": title,
 		"message": message, 
-		"form" : form
+		"form" : form,
+		"argent":argent,
 	}
 	context.update(csrf(request))
 	return  render(request, html, context)

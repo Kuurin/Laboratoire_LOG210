@@ -9,10 +9,11 @@
 
 	<!-- login-->
 {% if user.is_authenticated %}
-<div id="user-info">{{user.username}} | <a href="/logout/"> logout | </a>
-{% if user.is_staff %}<a href="/optionsgestionnaire/"> options de gestionnaire </a>{% endif %}
-{% if not user.is_staff %}<a href="/optionsetudiant/"> options d'étudiant </a>{% endif %}
+<div id="user-info">
+{% if user.is_staff %}{{user.username}} | <a href="/logout/"> logout | </a><a href="/optionsgestionnaire/"> options de gestionnaire </a>{% endif %}
+{% if not user.is_staff %}{{user.username}} | {{argent}} | <a href="/logout/"> logout | </a><a href="/optionsetudiant/"> options d'étudiant </a>{% endif %}
 </div>
+
 
 {% else %}
 <div id="user-info"> <a href="/login/"> login </a>| <a href="/registeretudiant/"> register etudiant</a>| <a href="/registergestionnaire/"> register gestionnaire</a></div>

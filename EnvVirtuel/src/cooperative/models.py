@@ -47,8 +47,8 @@ class Livre(models.Model):
 	
 	def __str__(self):
 		if self.acheteur!="":
-			return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix neuf de " + str(self.prix_neuf) + " $" + ", " + dict(self.etat_choix)[self.etat] + ". " + dict(self.recu_choix)[self.recu] + " par " + self.acheteur
-		return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix neuf de " + str(self.prix_neuf) + " $" + ", " + dict(self.etat_choix)[self.etat] + ". " + dict(self.recu_choix)[self.recu]
+			return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix de " + str(float(self.etat) * float(self.prix_neuf)) + " $, " + dict(self.etat_choix)[self.etat] + ". " + dict(self.recu_choix)[self.recu] + " par " + self.acheteur
+		return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix de " + str(float(self.etat) * float(self.prix_neuf)) + " $, " + dict(self.etat_choix)[self.etat] + ". " + dict(self.recu_choix)[self.recu]
 	def reserver(self, acheteur):
 		self.recu="0.50"
 		self.acheteur = str(acheteur)
@@ -56,6 +56,9 @@ class Livre(models.Model):
 	def acheter(self,acheteur):
 		self.acheteur = str(acheteur)
 		self.recu="0.75"
+		prix = float(self.etat) * float(self.prix_neuf)
+		Argent.debourser(acheteur, prix)
+		Argent.gagner(self.user,prix)
 		self.save()
 	def remettre(self):
 		self.recu = "0.25"
@@ -72,18 +75,20 @@ class Argent(models.Model):
 	username = models.CharField(max_length=120, blank=True, null=True)
 	
 	def __str__(self):
-		return self.username + " a " + self.montant + "$"
+		return self.montant + "$"
 		
 	
 	@staticmethod
 	def creer_bourse(username, montant):
 		n = Argent(montant=montant,username=username)
 		n.save()
-	
-	def debourser(self, montant):
-		self.montant = str(float(self.montant) - float(montant))
-		self.save()
-		
-	def gagner(self, montant):
-		self.montant = str(float(self.montant) + float(montant))
-		self.save()
+	@staticmethod
+	def debourser(username, montant):
+		u = Argent.objects.get(username=username)
+		u.montant = str(float(u.montant) - float(montant))
+		u.save()
+	@staticmethod	
+	def gagner(username, montant):
+		u = Argent.objects.get(username=username)
+		u.montant = str(float(u.montant) - float(montant))
+		u.save()
