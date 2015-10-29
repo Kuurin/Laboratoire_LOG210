@@ -106,18 +106,25 @@ class RechercheForm(forms.Form):
 	r_titre = forms.CharField(label='Titre', max_length=200,required=False)
 	user_id = forms.CharField(label="Identifiant d'utilisateur", max_length=100,required=False)
 	r_auteur = forms.CharField(label='Auteur', max_length=200,required=False)
-
+	#s'il est reçu 
+	recu_choix = (('', 'Non spécifié'), ('0' , 'Avec le vendeur'), ('0.25' , 'A la cooperative'), ('0.50' , 'Reserve'), ('0.75' , 'Achete'), ('1' , "Delivre à l'acheteur"),)
+	r_recu = forms.ChoiceField(choices=recu_choix, label="Étape", required=False)
+	
+	
 	def cacher(self):
 		self.fields['code'].widget = self.fields['code'].hidden_widget()
 		self.fields['r_titre'].widget = self.fields['r_titre'].hidden_widget()
 		self.fields['user_id'].widget = self.fields['user_id'].hidden_widget()
 		self.fields['r_auteur'].widget = self.fields['r_auteur'].hidden_widget()
+		self.fields['r_recu'].widget = self.fields['r_auteur'].hidden_widget()
 	def chercher(self):
 		livres = Livre.objects.all()
 		c_code = self.data.get('code')
 		c_titre = self.data.get('r_titre')
 		c_user = self.data.get('user_id')
 		c_r_auteur = self.data.get('r_auteur')
+		c_r_recu = self.data['r_recu']
+		print(c_r_recu)
 		if c_code is not None:
 			livres = self.filtrer(livres,"ISBN",c_code)
 		if c_titre is not None:
@@ -126,6 +133,8 @@ class RechercheForm(forms.Form):
 			livres = self.filtrer(livres,"user",c_user)
 		if c_r_auteur is not None:
 			livres = self.filtrer(livres,"r_auteur",c_r_auteur)
+		if not c_r_recu == '':
+			livres = self.filtrer(livres,"r_recu",c_r_recu)
 		return livres
 	def contains(self,exp, str):
 		exp = exp.lower()
@@ -151,6 +160,8 @@ class RechercheForm(forms.Form):
 			for l in livres:
 				if not self.contains(exp, l.auteur):
 					livres = livres.exclude(id=l.id)
+		if critere == "r_recu":
+			livres = livres.filter(recu=exp)
 		return livres
 
 
@@ -159,5 +170,5 @@ class GestionLivreForm(forms.Form):
 		super(GestionLivreForm, self).__init__(*args, **kwargs)
 		if len(livres)>=1:
 			livres = livres.order_by('user')
-			self.fields['livres'] = forms.ModelChoiceField(queryset=livres, initial=livres[0], widget=forms.RadioSelect())
+			self.fields['livres'] = forms.ModelChoiceField(queryset=livres, initial=livres[len(livres)-1], widget=forms.RadioSelect())
 	

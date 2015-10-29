@@ -216,9 +216,7 @@ def etudiantvoirlivres(request):
 	}
 	context.update(csrf(request))
 	
-	return  render(request, html, context)
-	
-	
+	return  render(request, html, context)	
 	
 def etudiantvoirreserves(request):
 	title = "Livre(s) réservé(s) :"
@@ -322,6 +320,10 @@ def actionlivre(request):
 		return acheterlivre(request)
 	if request.POST.get("name") == "Annuler la réservation":
 		return dereserverlivre(request)
+	if request.POST.get("name") == "Livrer le livre":
+		return livrerlivre(request)
+	if request.POST.get("name") == "Annuler transaction":
+		return annulertransaction(request)	
 	return home(request)
 def reserverlivre(request):
 	title = "Réservation d'un livre"
@@ -344,6 +346,22 @@ def reserverlivre(request):
 	context.update(csrf(request))
 	return  render(request, html, context)
 
+def livrerlivre(request):
+	livre = Livre.objects.get(id=request.POST.get('livres'))
+	livre.livrer()
+	if not request.user.is_staff:
+		return etudiantvoirlivres(request)
+	if request.user.is_staff:
+		return gestionnairevoirlivres(request)	
+	
+def annulertransaction(request):
+	livre = Livre.objects.get(id=request.POST.get('livres'))
+	livre.annulertransaction()
+	if not request.user.is_staff:
+		return etudiantvoirlivres(request)
+	if request.user.is_staff:
+		return gestionnairevoirlivres(request)	
+	
 def dereserverlivre(request):
 	title = "Achat d'un livre"
 	if request.user.is_authenticated and not request.user.is_staff:
@@ -353,7 +371,6 @@ def dereserverlivre(request):
 	livre = Livre.objects.get(id=request.POST.get('iden') or request.POST.get('livres'))
 	livre.dereserver(request.user)
 	return etudiantvoirreserves(request)
-
 	
 def acheterlivre(request):
 	title = "Achat d'un livre"
@@ -362,6 +379,7 @@ def acheterlivre(request):
 	else:
 		argent = ""
 	livre = Livre.objects.get(id=request.POST.get('iden') or request.POST.get('livres'))
+	
 	livre.acheter(request.user)
 	message = "Le livre a été acheté. Il est prêt à être récupéré. : " + str(livre)
 	form = LivreForm(None, initial={'iden':livre.id})
@@ -444,6 +462,8 @@ def recherche(request):
 	message = 'Veuillez entrer vos critères de recherche ou rien pour accéder à tout'
 
 	form = RechercheForm(None)
+	if not request.user.is_staff:
+		form.fields['r_recu'].widget = form.fields['r_auteur'].hidden_widget()
 	html = "recherche.html"
 	context = {
 		"title": title,
@@ -462,7 +482,7 @@ def gestionnairevoirlivres(request):
 	LIVRES_TROUVES = r_form.chercher()
 	r_form.cacher()
 	
-	if len(LIVRES_TROUVES.filter(recu="0"))>0:
+	if len(LIVRES_TROUVES)>0:
 		g_form = GestionLivreForm(LIVRES_TROUVES)
 		g_form.fields['livres'].label = "Livres à éditer:"
 	else :
