@@ -66,3 +66,24 @@ class Livre(models.Model):
 		n_livre = Livre.objects.get(id=self.id)
 		n_livre.id = None
 		n_livre.save()
+
+class Argent(models.Model):
+	montant = models.CharField(max_length=120, blank=True, null=True)
+	username = models.CharField(max_length=120, blank=True, null=True)
+	
+	def __str__(self):
+		return self.username + " a " + self.montant + "$"
+		
+	
+	@staticmethod
+	def creer_bourse(username, montant):
+		n = Argent(montant=montant,username=username)
+		n.save()
+	
+	def debourser(self, montant):
+		self.montant = str(float(self.montant) - float(montant))
+		self.save()
+		
+	def gagner(self, montant):
+		self.montant = str(float(self.montant) + float(montant))
+		self.save()

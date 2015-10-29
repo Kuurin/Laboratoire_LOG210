@@ -39,6 +39,8 @@ def register_user_etudiant(request):
 	if request.method == 'POST':
 		if form.is_valid():
 			form.save()
+			username=form.cleaned_data['username']
+			Argent.creer_bourse(username,"1000")
 			return HttpResponseRedirect('/register_success/')
 		else: 
 			args = {}
@@ -173,7 +175,7 @@ def etudiantvoirlivres(request):
 	livres = Livre.objects.filter(user=request.user.username)
 	livres = livres.exclude(recu="0")
 	
-	message=""
+	message=str(Argent.objects.get(username=request.user.username)) + "\n\n"
 	for l in livres:
 		message = message + str(l) + "\n"
 	
