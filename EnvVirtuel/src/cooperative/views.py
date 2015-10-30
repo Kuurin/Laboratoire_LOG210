@@ -348,7 +348,8 @@ def reserverlivre(request):
 
 def livrerlivre(request):
 	livre = Livre.objects.get(id=request.POST.get('livres'))
-	livre.livrer()
+	if User.objects.get(username=livre.acheteur).check_password(request.POST.get('password')) == True:
+		livre.livrer()
 	if not request.user.is_staff:
 		return etudiantvoirlivres(request)
 	if request.user.is_staff:
@@ -356,7 +357,8 @@ def livrerlivre(request):
 	
 def annulertransaction(request):
 	livre = Livre.objects.get(id=request.POST.get('livres'))
-	livre.annulertransaction()
+	if User.objects.get(username=livre.acheteur).check_password(request.POST.get('password')) == True:
+		livre.annulertransaction()
 	if not request.user.is_staff:
 		return etudiantvoirlivres(request)
 	if request.user.is_staff:

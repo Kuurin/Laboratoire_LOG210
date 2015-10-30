@@ -14,9 +14,11 @@
     {% csrf_token %}
 	{{ r_form }}
     {{ form.as_table }}
+	<br>User password (pour livrer ou annuler transaction): <input type="password" name="password">
+	<p>
 	<input name="name" type="submit" value="Confirmer l'état puis recevoir" />
-	<input name="name" type="submit" value="Livrer le livre" />
 	<input name="name" type="submit" value="Annuler transaction" />
+	<input name="name" type="submit" value="Livrer le livre" />
 	<p>
 	<input name="name" type="submit" value="Supprimer le livre" />
 	<input name="name" type="submit" value="Dupliquer le livre" />
