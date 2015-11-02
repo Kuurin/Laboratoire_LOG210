@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import render
-from .models import Gestionnaire
 
 #pour login
 from django.contrib.auth.decorators import login_required
@@ -9,7 +8,6 @@ from django.contrib.auth.models import User
 
 #pour register
 #from django.contrib.auth.forms import UserCreationForm
-from projet_log210.forms import EtudiantRegistrationForm, GestionnaireRegistrationForm
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.contrib import auth

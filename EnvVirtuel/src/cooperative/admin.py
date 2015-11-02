@@ -3,18 +3,9 @@ from django.contrib import admin
 # Register your models here.
 from .forms import *
 from .models import *
+from django.contrib.auth.models import User
 
 
-class EtudiantAdmin(admin.ModelAdmin):
-	list_display = ["email", "no_tel"]
-	form = EtudiantForm
-	
-admin.site.register(Etudiant, EtudiantAdmin)
-
-class GestionnaireAdmin(admin.ModelAdmin):
-	list_display = ["email"]
-	form = GestionnaireForm
-admin.site.register(Gestionnaire, GestionnaireAdmin)
 
 class CooperativeAdmin(admin.ModelAdmin):
 	list_display = ["nom", "adresse"]

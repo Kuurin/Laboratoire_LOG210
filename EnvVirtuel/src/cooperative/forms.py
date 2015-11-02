@@ -1,32 +1,74 @@
 from django import forms
-
 from .models import *
+from django.contrib.auth.forms import UserCreationForm
+#un module de validation d'adresse courriel a été utilisé
+#son utilisation a été expliquée à l'adresse suivante
+#https://pypi.python.org/pypi/validate_email
+#consultée le 16 octobre 2015
+#L'information vient du Python Software Foundation [US]
+from validate_email import validate_email
+	
+class EtudiantRegistrationForm(UserCreationForm):
+	
+	class Meta:
+		model = User
+		fields = ('username', 'password1', 'password2')
+	
+	#validation phone number ou email	
+	def clean_username(self):
+		value = self.cleaned_data['username']
+		#si c'est un email
+		if '@' in value:
+			#un module de validation d'adresse courriel a été utilisé
+			#son utilisation a été expliquée à l'adresse suivante
+			#https://pypi.python.org/pypi/validate_email
+			#consultée le 16 octobre 2015
+			#L'information vient du Python Software Foundation [US]
+			if not validate_email(value):
+				raise forms.ValidationError("Veuillez entrer une adresse courriel valide")
+		#si c'est un numéro de téléphone	
+		if '@' not in value:
+			if len(value) is not 10 or not value.isnumeric():
+					raise forms.ValidationError("Votre numéro doit être écrit avec 10 chiffres, sans aucun autre caractère.")
+		return value
+		
+		
+	
+	def save(self,  commit=True):
+		user = super(EtudiantRegistrationForm, self).save(commit=False)
+		
+		if commit:
+			user.save()
+			
+		return user
 
+class GestionnaireRegistrationForm(UserCreationForm):
 	
-class EtudiantForm(forms.ModelForm):
-	class Meta: 
-		model = Etudiant
-		fields = ['email' , 'no_tel', 'password']
+	class Meta:
+		model = User
+		fields = ('username', 'password1', 'password2')
 		
-	def clean_no_tel(self):
-		no_tel = self.cleaned_data.get('no_tel')
-		c_no_tel = ''
-		for char in no_tel:
-			if char.isdigit():
-				c_no_tel += str(char)
-		if not len(c_no_tel)==10:
-			raise forms.ValidationError("Veuillez entrer les 10 chiffres du numéro de téléphone")
-		return c_no_tel
-		
+	#validation ou email	
+	def clean_username(self):
+		value = self.cleaned_data['username']
+		#un module de validation d'adresse courriel a été utilisé
+		#son utilisation a été expliquée à l'adresse suivante
+		#https://pypi.python.org/pypi/validate_email
+		#consultée le 16 octobre 2015
+		#L'information vient du Python Software Foundation [US]
+		if not validate_email(value):
+			raise forms.ValidationError("Veuillez entrer une adresse courriel valide")
+		return value
 	
-class GestionnaireForm(forms.ModelForm):
-	class Meta: 
-		model = Gestionnaire
-		fields = ['email' , 'password']
-	def clean_email(self):
-		return self.cleaned_data.get('email')
-	def clean_password(self):
-		return self.cleaned_data.get('password')
+	
+	def save(self,  commit=True):
+		user = super(GestionnaireRegistrationForm, self).save(commit=False)
+		
+		if commit:
+			user.save()
+			
+		return user
+		
 		
 		
 class CooperativeForm(forms.ModelForm):

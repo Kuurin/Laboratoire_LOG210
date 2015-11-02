@@ -5,22 +5,6 @@ import gatewaylib
 from DateTime import *
 from django.contrib.auth.models import User
 
-# Create your models here.
-class Etudiant(models.Model):
-	email = models.EmailField(blank=True, null=True)
-	besoinTel = not email.clean
-	no_tel = models.CharField(max_length=20, blank=True, null=True)
-	password = models.CharField(max_length=120, blank=False, null=True)
-	
-	def __str__(self): 
-		return self.email
-		
-class Gestionnaire(models.Model):
-	email = models.EmailField()
-	password = models.CharField(max_length=120, blank=False, null=True)
-	def __str__(self):
-		return self.email
-
 
 class Cooperative(models.Model):
 	nom = models.CharField(max_length=120, blank=False, null=True)
@@ -29,7 +13,25 @@ class Cooperative(models.Model):
 	def __str__(self):
 		return self.nom
 		
+class Etudiant(User):
+	def __init__(self, *args, **kwargs):
+		super(Etudiant, self).__init__(*args, **kwargs)
+	
+	@staticmethod
+	def contacter(username, message):
+		#notification par courriel
+		#Morceau de code par Alex Le
+		#http://alexanderle.com/blog/2011/send-sms-python.html
+		#consulé le 29-10-2015, publié le 05-06-2011
+		server = smtplib.SMTP( "smtp.gmail.com", 587 )
+		server.starttls()
+		server.login( 's20153log210eq01@gmail.com', 'serpentard' )
+		destination = username
+		if not "@" in destination:
+			destination = gatewaylib.get_email(destination)
+		server.sendmail( 'Cooperative ETS', destination, message )
 		
+	
 		
 class Livre(models.Model):
 	user = models.CharField(max_length=120, blank=True, null=True)
@@ -74,38 +76,14 @@ class Livre(models.Model):
 		prix = float(self.etat) * float(self.prix_neuf)
 		Argent.debourser(self.acheteur, prix)
 		Argent.gagner(self.user,prix)
-		
-		#notification par courriel
-		#Morceau de code par Alex Le
-		#http://alexanderle.com/blog/2011/send-sms-python.html
-		#consulé le 29-10-2015, publié le 05-06-2011
-		server = smtplib.SMTP( "smtp.gmail.com", 587 )
-		server.starttls()
-		server.login( 's20153log210eq01@gmail.com', 'serpentard' )
-		destination = str(acheteur)
-		if not "@" in destination:
-			destination = gatewaylib.get_email(destination)
-		message = "Vous avez achete " + str(self.titre)
-		server.sendmail( 'Cooperative ETS', destination, message )
-		destination=self.user
-		if not "@" in destination:
-			destination = gatewaylib.get_email(destination)
-		message = "Votre livre a ete achete " + str(self.titre)
-		server.sendmail( 'Cooperative ETS', destination, message )
-		#fin du code emprunté
+		Etudiant.contacter(self.acheteur,"Vous avez achete " + str(self.titre))
+		Etudiant.contacter(self.user, "Votre livre a ete achete " + str(self.titre))
 		
 		self.save()
 	def remettre(self):
 		if self.recu=="0":
 			self.recu = "0.25"
-			server = smtplib.SMTP( "smtp.gmail.com", 587 )
-			server.starttls()
-			server.login( 's20153log210eq01@gmail.com', 'serpentard' )
-			destination = self.user
-			if not "@" in destination:
-				destination = gatewaylib.get_email(destination)
-			message = str(self.titre) + " a ete remis a la cooperative"
-			server.sendmail( 'Cooperative ETS', destination, message )
+			Etudiant.contacter(self.user, str(self.titre) + " a ete remis a la cooperative")
 		self.save()
 	def livrer(self):
 		if self.recu=="0.75":
