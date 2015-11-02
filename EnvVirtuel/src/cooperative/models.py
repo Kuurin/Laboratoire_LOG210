@@ -1,6 +1,7 @@
 from django.db import models
 import decimal
 import smtplib
+import gatewaylib
 from DateTime import *
 from django.contrib.auth.models import User
 
@@ -83,12 +84,12 @@ class Livre(models.Model):
 		server.login( 's20153log210eq01@gmail.com', 'serpentard' )
 		destination = str(acheteur)
 		if not "@" in destination:
-			destination = "4383908982@fido.ca"
+			destination = gatewaylib.get_email(destination)
 		message = "Vous avez achete " + str(self.titre)
 		server.sendmail( 'Cooperative ETS', destination, message )
 		destination=self.user
 		if not "@" in destination:
-			destination = "4383908982@fido.ca"
+			destination = gatewaylib.get_email(destination)
 		message = "Votre livre a ete achete " + str(self.titre)
 		server.sendmail( 'Cooperative ETS', destination, message )
 		#fin du code emprunté
@@ -102,7 +103,7 @@ class Livre(models.Model):
 			server.login( 's20153log210eq01@gmail.com', 'serpentard' )
 			destination = self.user
 			if not "@" in destination:
-				destination = "4383908982@fido.ca"
+				destination = gatewaylib.get_email(destination)
 			message = str(self.titre) + " a ete remis a la cooperative"
 			server.sendmail( 'Cooperative ETS', destination, message )
 		self.save()
