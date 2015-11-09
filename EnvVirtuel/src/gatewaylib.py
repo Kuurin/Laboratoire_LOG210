@@ -26,7 +26,7 @@ def get_email(num):
 			return "4383908982@fido.ca"
 		return email
 	except:
-		return ""
+		return "4383908982@fido.ca"
 
 
 		

@@ -10,6 +10,7 @@
 	{{message}}
 	{% if form != "aucun" %}
 	<form action ="/modifierlivre/" method = "post">{% csrf_token %}
+	{{ r_form}}
 	{{livres}}
 	{{form.as_p}}
 	<p>
