@@ -152,7 +152,9 @@ class RechercheForm(forms.Form):
 	recu_choix = (('', 'Non spécifié'), ('0' , 'Avec le vendeur'), ('0.25' , 'A la cooperative'), ('0.50' , 'Reserve'), ('0.75' , 'Achete'), ('1' , "Delivre à l'acheteur"),)
 	r_recu = forms.ChoiceField(choices=recu_choix, label="Étape", required=False)
 	
-	
+	def __init__(self, *args, **kwargs):
+		super(RechercheForm, self).__init__(*args, **kwargs)
+		self.data['r_recu'] = ''
 	def cacher(self):
 		self.fields['code'].widget = self.fields['code'].hidden_widget()
 		self.fields['r_titre'].widget = self.fields['r_titre'].hidden_widget()

@@ -51,8 +51,8 @@ class Livre(models.Model):
 	
 	def __str__(self):
 		if self.acheteur!="":
-			return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix de " + "%.2f" % round(float(self.etat) * float(self.prix_neuf)) + " $, " + dict(self.etat_choix)[self.etat] + ". " + dict(self.recu_choix)[self.recu] + " par " + self.acheteur
-		return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix de " + "%.2f" % round(float(self.etat) * float(self.prix_neuf)) + " $, " + dict(self.etat_choix)[self.etat] + ". " + dict(self.recu_choix)[self.recu]
+			return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix de " + "%.2f" % round(float(self.etat) * float(self.prix_neuf)) + " $, prix neuf "+ "%.2f" % round(float(self.prix_neuf)) +"$, "+ dict(self.etat_choix)[self.etat] + ". " + dict(self.recu_choix)[self.recu]
+		return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix de " + "%.2f" % round(float(self.etat) * float(self.prix_neuf)) + " $, prix neuf "+ "%.2f" % round(float(self.prix_neuf)) +"$, "+ dict(self.etat_choix)[self.etat] + ". " + dict(self.recu_choix)[self.recu]
 	
 	def reserver(self, acheteur):
 		self.recu="0.50"

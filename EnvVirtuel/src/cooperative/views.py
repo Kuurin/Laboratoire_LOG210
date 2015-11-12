@@ -410,7 +410,9 @@ def modifierlivre(request):
 		argent = ""
 	message = 'Veuillez modifier les champs voulus'
 	
-	r_form = RechercheForm(request.POST or None)
+	r_form = RechercheForm(None)
+	if request.user.is_authenticated and request.user.is_staff:
+		r_form = RechercheForm(request.POST or None)
 	LIVRES_TROUVES = r_form.chercher()
 	r_form.cacher()
 	
@@ -461,7 +463,7 @@ def recherche(request):
 		argent = ""
 	message = 'Veuillez entrer vos critères de recherche ou rien pour accéder à tout'
 
-	form = RechercheForm(None)
+	form = RechercheForm(None, initial = {'r_recu': ''})
 	if not request.user.is_staff:
 		form.fields['r_recu'].widget = form.fields['r_auteur'].hidden_widget()
 	html = "recherche.html"
