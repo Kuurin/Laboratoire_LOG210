@@ -23,10 +23,10 @@ def get_email(num):
 		email = soup_string[debut:fin]
 		if not "@" in email:
 			#l'adresse par défaut en cas d'erreur
-			return "4383908982@fido.ca"
+			return "s20153log210eq01@gmail.com "
 		return email
 	except:
-		return "4383908982@fido.ca"
+		return "s20153log210eq01@gmail.com "
 
 
 		
