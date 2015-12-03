@@ -38,7 +38,7 @@ class Livre(models.Model):
 	user = models.CharField(max_length=120, blank=True, null=True)
 	acheteur = models.CharField(max_length=120, blank=True, null=True, default="")
 
-	ISBN = models.CharField(max_length=16, blank=False, null=True)
+	ISBN = models.CharField(max_length=16, blank=True, null=True)
 	titre = models.CharField(max_length=120, blank=False, null=True)
 	auteur = models.CharField(max_length=120, blank=False, null=True)
 	nb_pages = models.IntegerField(default=1)
