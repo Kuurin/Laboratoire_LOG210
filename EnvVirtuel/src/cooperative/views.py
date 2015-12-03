@@ -14,6 +14,7 @@ from django.contrib import auth
 from django.core.context_processors import csrf
 
 from .forms import *
+from .models import *
 # Create your views here.
 
 import isbnlib
@@ -99,6 +100,7 @@ def registercoop(request):
 	return render(request, html, context)
 	
 def optionsetudiant(request):
+	Livre.updateReservations()
 	title = "Étudiant"
 	html = "optionsetudiant.html"
 	if request.user.is_authenticated and not request.user.is_staff:
@@ -115,6 +117,7 @@ def optionsetudiant(request):
 	return render(request, html, context)
 	
 def optionsgestionnaire(request):
+	Livre.updateReservations()
 	title = "Gestionnaire"
 	html = "optionsgestionnaire.html"
 	message = "Ici vont se trouver les options pour le gestionnaire"
@@ -217,6 +220,7 @@ def etudiantvoirlivres(request):
 	return  render(request, html, context)	
 	
 def etudiantvoirreserves(request):
+	Livre.updateReservations()
 	title = "Livre(s) réservé(s) :"
 	if request.user.is_authenticated and not request.user.is_staff:
 		argent = Argent.objects.get(username=request.user.username)
@@ -330,10 +334,10 @@ def reserverlivre(request):
 	else:
 		argent = ""
 	livre = Livre.objects.get(id=request.POST.get('livres'))
-	message = "Le livre a été réservé : " + str(livre)
 	form = LivreForm(None, initial={'iden':livre.id})
 	form.cacher()
 	livre.reserver(request.user)
+	message = "Le livre a été réservé pour un temps limité: " + str(livre)
 	html = "etudiantreserverlivre.html"
 	context = {
 		"title": title,
@@ -456,6 +460,7 @@ def supprimerlivre(request):
 		return gestionnairevoirlivres(request)
 
 def recherche(request):
+	Livre.updateReservations()
 	title = 'Recherche de livres à la coopérative'
 	if request.user.is_authenticated and not request.user.is_staff:
 		argent = Argent.objects.get(username=request.user.username)
@@ -518,31 +523,3 @@ def gestionnairerecus(request):
 	}
 	context.update(csrf(request))
 	return  gestionnairevoirlivres(request)
-#def contact(request):
-#	form = ContactForm(request.POST or None)
-#	if form.is_valid():
-#		#for key in form.cleaned_data:
-#		#	print(form.cleaned_data.get(key))
-#		form_email = form.cleaned_data.get("email")
-#		form_message = form.cleaned_data.get("message")
-#		form_full_name = form.cleaned_data.get("full_name")
-#		
-#		subject = "Site contact form"
-#		from_email= settings.EMAIL_HOST_USER
-#		to_email = [from_email, "doubleswordman@hotmail.com"]
-#		contact_message = "%s: %s via %s"%(
-#			form_full_name,
-#			form_message, 
-#			form_email)
-#		
-#		send_mail(subject, 
-#			contact_message, 	
-#			from_email, 
-#			to_email, 
-#			fail_silently=False)
-#					
-#		
-#	context = {
-#		"form":form,
-#	}
-#	return render(request, "forms.html", context)

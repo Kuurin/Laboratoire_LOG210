@@ -4,6 +4,7 @@ import smtplib
 import gatewaylib
 from DateTime import *
 from django.contrib.auth.models import User
+import time
 
 
 class Cooperative(models.Model):
@@ -48,14 +49,27 @@ class Livre(models.Model):
 	#s'il est reçu 
 	recu_choix = (('0' , 'Avec le vendeur'), ('0.25' , 'A la cooperative'), ('0.50' , 'Reserve'), ('0.75' , 'Achete'), ('1' , "Delivre à l'acheteur"),)
 	recu = models.CharField(max_length=4,choices=recu_choix, default = '0')
+	#temps depuis lequel il est réservé
+	tempsReserve = models.FloatField(default=0)
+	tempsMaxEnHeure = 1/60
+	tempsMaxEnSec = tempsMaxEnHeure*60*60
 	
 	def __str__(self):
+		if self.acheteur!="" and self.recu == "0.50":
+			return dict(self.recu_choix)[self.recu]+" jusqu'a " + time.ctime(self.tempsReserve+self.tempsMaxEnSec)+" . "+str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix de " + "%.2f" % round(float(self.etat) * float(self.prix_neuf)) + " $, prix neuf "+ "%.2f" % round(float(self.prix_neuf)) +"$, "+ dict(self.etat_choix)[self.etat] + ". " 
 		if self.acheteur!="":
 			return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix de " + "%.2f" % round(float(self.etat) * float(self.prix_neuf)) + " $, prix neuf "+ "%.2f" % round(float(self.prix_neuf)) +"$, "+ dict(self.etat_choix)[self.etat] + ". " + dict(self.recu_choix)[self.recu]
 		return str(self.user) +" : "+ self.titre + " de " + self.auteur + " au prix de " + "%.2f" % round(float(self.etat) * float(self.prix_neuf)) + " $, prix neuf "+ "%.2f" % round(float(self.prix_neuf)) +"$, "+ dict(self.etat_choix)[self.etat] + ". " + dict(self.recu_choix)[self.recu]
-	
+	@staticmethod
+	def updateReservations():
+		livres = Livre.objects.all()
+		currentTime = time.time()
+		for l in livres:
+			if l.recu == "0.50" and l.tempsReserve+l.tempsMaxEnSec<currentTime:
+				l.dereserver("personne")
 	def reserver(self, acheteur):
 		self.recu="0.50"
+		self.tempsReserve=time.time()
 		self.acheteur = str(acheteur)
 		self.save()
 	def dereserver(self, acheteur):

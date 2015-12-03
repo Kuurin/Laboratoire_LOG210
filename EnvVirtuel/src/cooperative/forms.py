@@ -150,11 +150,11 @@ class RechercheForm(forms.Form):
 	r_auteur = forms.CharField(label='Auteur', max_length=200,required=False)
 	#s'il est reçu 
 	recu_choix = (('', 'Non spécifié'), ('0' , 'Avec le vendeur'), ('0.25' , 'A la cooperative'), ('0.50' , 'Reserve'), ('0.75' , 'Achete'), ('1' , "Delivre à l'acheteur"),)
-	r_recu = forms.ChoiceField(choices=recu_choix, label="Étape", required=False)
+	r_recu = forms.ChoiceField(choices=recu_choix, label="Étape", required=False,initial='')
 	
 	def __init__(self, *args, **kwargs):
 		super(RechercheForm, self).__init__(*args, **kwargs)
-		self.data['r_recu'] = ''
+		#self.data['r_recu'] = ''
 	def cacher(self):
 		self.fields['code'].widget = self.fields['code'].hidden_widget()
 		self.fields['r_titre'].widget = self.fields['r_titre'].hidden_widget()
